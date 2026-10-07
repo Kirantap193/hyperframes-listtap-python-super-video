@@ -1,0 +1,99 @@
+<template id="g2-a-template">
+  <style> #root { position: absolute; inset: 0; overflow: hidden; pointer-events: none; } </style>
+  <div data-hf-id="hf-ttsz" id="root" data-composition-id="g2-a" data-width="1920" data-height="1080" data-duration="21.2"></div>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <script src="assets/kit.js"></script>
+  <script>
+    (function () {
+      var tl = gsap.timeline({ paused: true });
+      var root = document.querySelector('[data-composition-id="g2-a"]');
+      var k = K.make(root, tl);
+      var BEAT = window.__g2aBeats = {};
+
+      // ================= S10  the pre-super code; both __init__ methods side by side =================
+      var cw = k.win({ x: 64, y: 150, w: 900, h: 400, title: "Main.py", dash: true, font: 30, lh: 43 });
+      var LH = cw.LH, CW = cw.CW;
+      var P = cw.block(["class Customer:", "",
+        "    def __init__(self,name,phone,email):", "        self.name = name", "        self.phone = phone", "        self.email = email", "", "",
+        "class PlatinumCustomer(Customer):", "",
+        "    def __init__(self,name,phone,email,platinum_id):", "        self.name = name", "        self.phone = phone",
+        "        self.email = email", "        self.platinum_id = platinum_id", "",
+        "    def display(self):", "        print(self.__dict__)", "",
+        "def main():", "    platinum_customer = PlatinumCustomer(", "        'Rohit', 9900887766,'rohit@gmail.com', 10)",
+        "    platinum_customer.display()", "",
+        "if __name__ == '__main__':", "    main()"], 0);
+      // P: 0 class Customer, 1 def __init__, 2-4 parent assignments, 5 class PlatinumCustomer,
+      //    6 def __init__, 7-9 duplicated assignments, 10 self.platinum_id, 11 def display, 12 print,
+      //    13 def main, 14-15 constructor call, 16 display(), 17 if, 18 main()
+      var SC = 6.5;   // the editor starts scrolled down (where the previous run left it)
+      P.slice(5).forEach(function (l) { l.row -= SC; l.rows[0][1] = l.row; l.el.style.top = (l.row * LH) + "px"; });
+
+      var t = cw.pop(0.3);
+      t = cw.show(P.slice(5), t, 0.05);
+      t += 1.0;
+
+      // scroll back to the top: the lower lines slide out, Customer comes back in at the top
+      BEAT.scrollTop = t;
+      P.slice(5, 13).forEach(function (l) { cw.moveTo(l, l.row + SC, t, 0.6); });
+      P.slice(13).forEach(function (l) { k.move(l.el, { top: l.row * LH }, { top: (l.row + SC) * LH }, t, 0.6, "power2.inOut"); });
+      cw.fade(P.slice(13), t + 0.1, 0.4);
+      t = cw.show(P.slice(0, 5), t + 0.5, 0.05);
+      // teaching pause: the child repeats the parent's three assignments
+      BEAT.s10hold = t;
+      t += 1.9;
+
+      // ================= S11  delete the duplicated assignments =================
+      BEAT.s11 = t;
+      cw.fade([P[7], P[8], P[9]], t, 0.35);
+      t += 0.45;
+      // the lines below close the gap; main() scrolls up into view
+      var M = ["def main():", "    platinum_customer = PlatinumCustomer(", "        'Rohit', 9900887766,'rohit@gmail.com', 10)",
+        "    platinum_customer.display()"].map(function (s, i) { return cw.add(s, 16 + i); });
+      P.slice(10, 13).forEach(function (l) { cw.moveTo(l, l.row - 3, t, 0.5); });
+      M.forEach(function (l) { cw.moveTo(l, l.row - 3, t, 0.5); });
+      t = cw.show(M, t + 0.05, 0.04);
+      t += 0.8;
+      // Enter after the def line: an empty line opens above self.platinum_id
+      BEAT.enter = t;
+      var BELOW = P.slice(10, 13).concat(M);
+      BELOW.forEach(function (l) { cw.moveTo(l, l.row + 1, t); });
+      t += 0.45 + 0.8;
+
+      // ================= S12  type super().__init__(name,phone,email) =================
+      BEAT.s12 = t;
+      var S = cw.add("        super().__init__(name,phone,email)", 9);
+      S.showAt = t;
+      // the kit's neon-yellow insertion bar, held across the whole (paused) typing of the line
+      var ind = 8;
+      var ring = k.el("div", "k-ring k-edit c-neon", "left:" + Math.round(ind * CW - 10) + "px;width:" + Math.round((S.text.length - ind) * CW + 20) +
+        "px;top:" + Math.round(LH * 0.04) + "px;bottom:" + Math.round(LH * 0.04) + "px;", null, S.el);
+      S.el.insertBefore(ring, S.el.firstChild);
+      k.hide(ring);
+      tl.fromTo(ring, { autoAlpha: 0, scaleX: 0, transformOrigin: "0% 50%" }, { autoAlpha: 1, scaleX: 1, duration: 0.3, ease: "power2.out", immediateRender: false }, t);
+      var full = S.chars;
+      S.chars.slice(0, ind).forEach(function (c) { tl.fromTo(c, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01, ease: "none", immediateRender: false }, t); });
+      function seg(a, b, at) { S.chars = full.slice(a, b); var e = cw._type(S, at); S.chars = full; return e; }
+      t = seg(ind, 15, t + 0.05);          // super()
+      t = seg(15, 24, t + 0.6);            // .__init__
+      t = seg(24, full.length, t + 0.6);   // (name,phone,email)
+      tl.fromTo(ring, { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.3, ease: "power1.inOut", immediateRender: false }, t + 0.9);
+      // teaching pause: constructor chaining
+      t += 1.9;
+
+      // ================= S13  run: the same dictionary =================
+      BEAT.s13 = t;
+      var ow = k.win({ x: 1000, y: 150, w: 856, h: 200, title: "output", out: true, font: 30, lh: 43 });
+      t = ow.pop(t + 0.6);
+      ["{'name': 'Rohit',", " 'phone': 9900887766,", " 'email': 'rohit@gmail.com',", " 'platinum_id': 10}"]
+        .forEach(function (s, i) { t = ow.print(s, "", t + (i ? 0.08 : 0.1)); });
+      BEAT.printed = t;
+      t += 1.8;
+
+      // fade everything out
+      BEAT.out = t;
+      t = k.out([cw.el, ow.el], t, 0.6);
+      window.__g2aEnd = t;
+      window.__timelines["g2-a"] = tl;
+    })();
+  </script>
+</template>

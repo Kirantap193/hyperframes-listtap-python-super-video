@@ -1,0 +1,123 @@
+<template id="g5-a-template">
+  <style> #root { position: absolute; inset: 0; overflow: hidden; pointer-events: none; } </style>
+  <div data-hf-id="hf-ki41" id="root" data-composition-id="g5-a" data-width="1920" data-height="1080" data-duration="53"></div>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <script src="assets/kit.js"></script>
+  <script>
+    (function () {
+      var tl = gsap.timeline({ paused: true });
+      var root = document.querySelector('[data-composition-id="g5-a"]');
+      var k = K.make(root, tl);
+      var BEAT = window.__g5aBeats = {};
+
+      var cw = k.win({ x: 64, y: 150, w: 900, h: 400, title: "Main.py", dash: true, font: 30, lh: 43 });
+
+      // Example 2's class Customer, already written in the previous group
+      var P = cw.block(["class Customer:", "",
+        "    def __init__(self,name,address,phone_no):",
+        "        self.name = name",
+        "        self.address = address",
+        "        self.phone_no = phone_no", "",
+        "    def place_order(self,dish):",
+        "        cost = 0",
+        "        delivery_charge = 50",
+        "        if dish == 'pizza':",
+        "            cost = 500 + delivery_charge",
+        "        else:",
+        "            cost = 250 + delivery_charge",
+        "        return cost"], 0);
+      // P: 0 class, 1 def __init__, 2-4 self.*, 5 def place_order, 6 cost = 0, 7 delivery_charge,
+      //    8 if, 9 cost = 500, 10 else, 11 cost = 250, 12 return cost      (P.endRow = 14)
+
+      // the editor scrolls: the top lines leave, everything below slides up
+      function scroll(gone, stay, rows, at) {
+        cw.fade(gone, at, 0.3);
+        stay.forEach(function (l) {
+          cw.moveTo(l, l.row - rows, at, 0.6);
+          l.rows[l.rows.length - 1][0] = at + 0.35;   // the window shrinks as the lines arrive
+        });
+        return at + 0.8;
+      }
+
+      var t = cw.pop(0.3);
+      t = cw.show(P, t, 0.05);
+      t += 1.0;
+
+      // ================= S25  class PlatinumCustomer(Customer) + overriding __init__ =================
+      BEAT.s25 = t;
+      var Lcls = cw.add("class PlatinumCustomer(Customer):", 14.5);
+      var Linit = cw.add("    def __init__(self,name,address,phone_no,platinum_id):", 16);
+      t = cw.typeCode([Lcls], t);
+      t += 0.4;                                  // the inherited __init__ / place_order
+      t = cw.typeCode([Linit], t);
+
+      // ================= S26  super().__init__(...) chains to the parent =================
+      BEAT.s26 = t;
+      var Lsup = cw.add("        super().__init__(name,address,phone_no)", 17);
+      t = cw.type(Lsup, t) + 1.0;
+      // scroll 4.5 rows: class Customer / __init__ / self.name / self.address leave the top
+      BEAT.scroll1 = t;
+      t = scroll(P.slice(0, 4), P.slice(4).concat([Lcls, Linit, Lsup]), 4.5, t);
+      t += 0.4;
+      var Lpid = cw.add("        self.platinum_id = platinum_id", 13.5);
+      t = cw.type(Lpid, t) + 1.2;
+
+      // ================= S27  overriding place_order =================
+      BEAT.s27 = t;
+      var Lpo = cw.add("    def place_order(self,dish):", 15);
+      t = cw.typeCode([Lpo], t);
+
+      // ================= S28  super().place_order(dish) - delivery_charge =================
+      BEAT.s28 = t;
+      var Lret = cw.add("        super().place_order(dish)", 16);
+      t = cw.type(Lret, t) + 1.2;
+      // a new line opens above the super() call: delivery_charge = 50
+      BEAT.dc = t;
+      cw.moveTo(Lret, 17, t);
+      t += 0.5;
+      var Ldc = cw.add("        delivery_charge = 50", 16);
+      t = cw.type(Ldc, t) + 1.0;
+      // subtract it from what the parent returns
+      Lret = cw.edit(Lret, "        super().place_order(dish) - delivery_charge", t);
+      t = Lret.t + 1.4;
+
+      // ================= S29  return (...)*0.95 =================
+      BEAT.s29 = t;
+      Lret = cw.edit(Lret, "        return super().place_order(dish) - delivery_charge", t);
+      t = Lret.t + 1.4;
+      BEAT.disc = t;
+      Lret = cw.edit(Lret, "        return (super().place_order(dish) - delivery_charge", t);
+      t = Lret.t + 0.4;
+      Lret = cw.edit(Lret, "        return (super().place_order(dish) - delivery_charge)*0.95", t);
+      t = Lret.t + 1.6;
+
+      // ================= S30  main() =================
+      BEAT.s30 = t;
+      // scroll 6.5 rows: the top line becomes "else:"
+      var stay2 = P.slice(10).concat([Lcls, Linit, Lsup, Lpid, Lpo, Ldc, Lret]);
+      t = scroll(P.slice(4, 10), stay2, 6.5, t);
+      t += 0.4;
+      var M = [cw.add("def main():", 12.5),
+               cw.add("    platinum_customer = PlatinumCustomer(", 13.5),
+               cw.add("        'Rohit', 'ITC', 9900887766, 12)", 14.5)];
+      t = cw.typeCode(M, t);
+      t += 0.5;
+      BEAT.call = t;
+      var Lpr = cw.add("    platinum_customer.place_order('pizza')", 15.5);
+      t = cw.type(Lpr, t) + 1.2;
+      // the call returns the cost: wrap it in print( ... )
+      BEAT.print = t;
+      Lpr.text = "    \u0001" + Lpr.text.slice(4);   // keep the edit to the inserted "print(" only
+      Lpr = cw.edit(Lpr, "    print(platinum_customer.place_order('pizza')", t);
+      t = Lpr.t + 0.4;
+      Lpr = cw.edit(Lpr, "    print(platinum_customer.place_order('pizza'))", t);
+      t = Lpr.t + 1.6;
+
+      // ================= end: fade to black =================
+      BEAT.end = t;
+      t = k.out([cw.el], t, 0.6);
+      window.__g5aEnd = t;
+      window.__timelines["g5-a"] = tl;
+    })();
+  </script>
+</template>

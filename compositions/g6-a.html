@@ -1,0 +1,256 @@
+<template id="g6-a-template">
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+    .g6-panel { position: absolute; top: 150px; height: 810px; box-sizing: border-box; border-style: solid; border-width: 50px; }
+    .g6-stack { left: 1010px; width: 440px; border-image: url("assets/mem-stack2.png") 120 fill / 50px stretch; }
+    .g6-heap { left: 1478px; width: 408px; border-image: url("assets/mem-heap2.png") 120 fill / 50px stretch; }
+    .g6-plbl { position: absolute; top: 975px; text-align: center; white-space: pre; font-family: "Nunito", "Segoe UI", sans-serif;
+      font-weight: 400; font-size: 38px; line-height: 46px; color: #ffffff; }
+    .g6-fr { position: absolute; left: 1030px; width: 400px; }
+    .g6-fr svg { position: absolute; left: 0; top: 0; overflow: visible; }
+    .g6-m { position: absolute; white-space: pre; font-family: "JetBrains Mono", Consolas, monospace; font-variant-ligatures: none; font-weight: 400; }
+    .g6-nm { left: 596px; width: 400px; text-align: right; font-size: 17px; line-height: 22px; color: #8d96ab; }
+    .g6-lb { font-size: 20px; color: #ffffff; }
+    .g6-r { text-align: right; }
+    .g6-pk { color: #ffb0c2; }
+    .g6-bx { position: absolute; background: #0b1836; border: 1.5px solid #3b5ea8; border-radius: 8px; box-sizing: border-box; }
+    .g6-dv { position: absolute; top: 0; width: 1.5px; height: 100%; background: #3b5ea8; }
+    .g6-v { font-size: 18px; text-align: center; color: #ffffff; }
+    .g6-ix { font-size: 16px; line-height: 20px; text-align: center; color: #c9d2e8; }
+    .g6-card { position: absolute; left: 1512px; top: 200px; width: 340px; height: 194px; border-radius: 14px; box-sizing: border-box;
+      background: linear-gradient(180deg, #127a68 0px, #0c5c50 44px, #0e1a28 44px, #0b1520 100%);
+      border: 1.5px solid rgba(90, 230, 200, 0.45); box-shadow: 0 8px 22px rgba(0, 0, 0, 0.55); }
+    .g6-addr { left: 14px; top: 0; font-size: 24px; line-height: 44px; color: #ffffff; }
+    .g6-tag { right: 12px; top: 9px; padding: 0 10px; line-height: 24px; font-size: 15px; color: #e8fff9;
+      border: 1.5px solid rgba(255, 255, 255, 0.55); border-radius: 7px; background: rgba(255, 255, 255, 0.12); }
+    .g6-hk { font-size: 19px; line-height: 32px; color: #9fb4cc; }
+    .g6-hv { font-size: 19px; line-height: 32px; color: #ffffff; }
+  </style>
+  <div data-hf-id="hf-92p3" id="root" data-composition-id="g6-a" data-width="1920" data-height="1080" data-duration="62.1"></div>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <script src="assets/kit.js"></script>
+  <script>
+    (function () {
+      var tl = gsap.timeline({ paused: true });
+      var root = document.querySelector('[data-composition-id="g6-a"]');
+      var k = K.make(root, tl);
+      var BEAT = window.__g6Beats = {};
+
+      // ---------- code: the font-30 view (from else: down to main) and the memory-size window ----------
+      var LOW = ["        else:", "            cost = 250 + delivery_charge", "        return cost", "",
+        "class PlatinumCustomer(Customer):", "", "    def __init__(self,name,address,phone_no,platinum_id):",
+        "        super().__init__(name,address,phone_no)", "        self.platinum_id = platinum_id", "",
+        "    def place_order(self,dish):", "        delivery_charge = 50",
+        "        return (super().place_order(dish) - delivery_charge)*0.95", "", "",
+        "def main():", "    platinum_customer = PlatinumCustomer(", "        'Rohit', 'ITC', 9900887766, 12)",
+        "    print(platinum_customer.place_order('pizza'))"];
+      var TOPS = ["class Customer:", "", "    def __init__(self,name,address,phone_no):", "        self.name = name",
+        "        self.address = address", "        self.phone_no = phone_no", "", "    def place_order(self,dish):",
+        "        cost = 0", "        delivery_charge = 50", "        if dish == 'pizza':", "            cost = 500 + delivery_charge"];
+      var cwB = k.win({ x: 64, y: 150, w: 900, h: 400, title: "Main.py", dash: true, font: 30, lh: 43 });
+      var LB = cwB.block(LOW, 0);
+      var cw = k.win({ x: 36, y: 150, w: 600, h: 400, title: "Main.py", dash: true, font: 16, lh: 24 });
+      var TOPL = cw.block(TOPS, 0);            // rows 0 - 10 (shown when the editor scrolls to the top)
+      var LOWL = cw.block(LOW, 0);             // rows 0 - 15.5 now, +11 after the scroll
+      var G = cw.block(["if __name__ == '__main__':", "    main()"], 17);
+      var SH = 11;                             // rows above "else:"
+
+      // ---------- memory layer + arrow layer (arrows above the frames) ----------
+      var M = k.layer({ x: 0, y: 0, w: 1920, h: 1080 });
+      var AR = k.layer({ x: 0, y: 0, w: 1920, h: 1080 });
+      function E(cls, css, html, parent) { return k.hide(k.el("div", cls, css, html, parent || M.el)); }
+      var stack = E("g6-panel g6-stack", ""), heap = E("g6-panel g6-heap", "");
+      var lStack = E("g6-plbl", "left:1010px;width:440px;", "Stack"), lHeap = E("g6-plbl", "left:1478px;width:408px;", "Private Heap");
+
+      // stack frames, bottom-up from the panel bottom (authoring coords; the kit lifts 56 px)
+      function frame(top, h, name, nameTop) {
+        var f = E("g6-fr", "top:" + top + "px;height:" + h + "px;",
+          '<svg width="400" height="' + h + '"><rect x="1.25" y="1.25" width="397.5" height="' + (h - 2.5) +
+          '" rx="20" fill="rgba(255,255,255,0.03)" stroke="#c8d6ff" stroke-opacity="0.45" stroke-width="2.5" stroke-dasharray="7 6"/></svg>');
+        f._top = top;
+        f.nm = E("g6-m g6-nm", "top:" + nameTop + "px;", name);
+        return f;
+      }
+      var FM = frame(810, 110, "main()", 854);
+      var FN = frame(644, 158, "<div>__new__</div><div>(cls,*args,**kwargs)</div>", 701);
+      var FC = frame(404, 232, "__init__", 509);
+      var FP = frame(206, 190, "__init__", 290);
+
+      // a label + value box inside a frame; v._c = absolute centre and font size (for flights)
+      // labels right-aligned to x 1248, boxes at x 1260 (130 wide) - the shared memory layout
+      function lab(f, x, y, w, text, extra, h) { return E("g6-m g6-lb" + (extra || ""), "left:" + x + "px;top:" + y + "px;line-height:" + (h || 36) + "px;" + (w ? "width:" + w + "px;" : ""), text, f); }
+      function vbox(f, x, y, w, text, h) {
+        h = h || 36;
+        var b = E("g6-bx", "left:" + x + "px;top:" + y + "px;width:" + w + "px;height:" + h + "px;", null, f);
+        var v = E("g6-m g6-v", "left:" + x + "px;top:" + y + "px;width:" + w + "px;line-height:" + h + "px;", text, f);
+        v._c = { x: 1030 + x + w / 2, y: f._top + y + h / 2, fs: 18 };
+        return { b: b, v: v };
+      }
+      function rows(f, names, vals) {
+        return names.map(function (n, i) {
+          var y = 14 + i * 42, r = vbox(f, 230, y, 130, vals[i]);
+          r.l = lab(f, 18, y, 200, n, " g6-r" + (n === "self" ? " g6-pk" : ""));
+          return r;
+        });
+      }
+      // __new__: cls + the *args tuple (one row of four cells)
+      var nCls = lab(FN, 20, 14, 0, "cls", " g6-pk"), nClsB = vbox(FN, 70, 14, 222, "'PlatinumCustomer'");
+      var nArgs = lab(FN, 20, 52, 0, "*args", " g6-pk");
+      var CELLS = [["'Rohit'", 94], ["'ITC'", 72], ["9900887766", 126], ["12", 40]], cx = 20, cells = [], idx = [];
+      var strip = E("g6-bx", "left:20px;top:106px;width:332px;height:36px;", null, FN);
+      CELLS.forEach(function (c, i) {
+        if (i) k.el("div", "g6-dv", "left:" + (cx - 20 - 0.75) + "px;", null, strip);
+        idx.push(E("g6-m g6-ix", "left:" + cx + "px;top:84px;width:" + c[1] + "px;", String(i), FN));
+        var v = E("g6-m g6-v", "left:" + cx + "px;top:107px;line-height:34px;width:" + c[1] + "px;", c[0], FN);
+        v._c = { x: 1030 + cx + c[1] / 2, y: 644 + 124, fs: 18 }; cells.push(v);
+        cx += c[1];
+      });
+      // __init__ frames
+      var CI = rows(FC, ["self", "name", "address", "phone_no", "platinum_id"], ["1000", "'Rohit'", "'ITC'", "9900887766", "12"]);
+      var PI = rows(FP, ["self", "name", "address", "phone_no"], ["1000", "'Rohit'", "'ITC'", "9900887766"]);
+      // main(): platinum_customer
+      var mLab = lab(FM, 18, 35, 200, "platinum_customer", " g6-r", 40), mBox = vbox(FM, 230, 35, 130, "1000", 40);
+
+      // heap card 1000 (PlatinumCustomer) with its four lines
+      var card = E("g6-card", "");
+      var addr = E("g6-m g6-addr", "", "1000", card), tag = E("g6-m g6-tag", "", "PlatinumCustomer", card);
+      var ADDR = { x: 1512 + 14 + 29, y: 222, fs: 24 };
+      var HL = [["name", "'Rohit'"], ["address", "'ITC'"], ["phone_no", "9900887766"], ["platinum_id", "12"]].map(function (kv, i) {
+        var y = 53 + i * 34, w = kv[1].length * 11.4;
+        var h = { k: E("g6-m g6-hk", "left:18px;top:" + y + "px;", kv[0], card), eq: E("g6-m g6-hv", "left:155px;top:" + y + "px;", "=", card),
+          v: E("g6-m g6-hv", "left:178px;top:" + y + "px;width:" + w + "px;", kv[1], card) };
+        h.v._c = { x: 1512 + 178 + w / 2, y: 200 + y + 16, fs: 19 };
+        return h;
+      });
+
+      // ---------- motion helpers ----------
+      function codeAt(row, col, len) { return { x: 36 + 26 + (col + len / 2) * 9.6, y: 150 + 76 + row * 24 + 12, fs: 16 }; }
+      function fly(v, src, at, dur) {          // a copy glides from src into v's place
+        var c = v._c;
+        v.style.transformOrigin = "50% 50%"; v.setAttribute("data-layout-allow-overlap", "true");
+        tl.fromTo(v, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.12, ease: "none", immediateRender: false }, at);
+        k.move(v, { x: src.x - c.x, y: src.y - c.y, scale: src.fs / c.fs }, { x: 0, y: 0, scale: 1 }, at, dur || 0.75, "power2.inOut");
+        return at + (dur || 0.75);
+      }
+      function boxIn(b, at) { b.style.transformOrigin = "50% 50%"; return k.move(b, { autoAlpha: 0, scale: 0.7 }, { autoAlpha: 1, scale: 1 }, at, 0.35, "power3.out"); }
+      function push(f, at) {
+        k.move(f, { y: -360 }, { y: 0 }, at, 0.8, "power3.out");
+        tl.fromTo(f, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3, ease: "power1.out", immediateRender: false }, at);
+        k.typeText(f.nm, at + 0.55, 0.04);
+        return at + 0.55 + f.nm.textContent.length * 0.04;
+      }
+      function popOff(els, at) {
+        tl.fromTo(els, { y: 0, autoAlpha: 1 }, { y: -40, autoAlpha: 0, duration: 0.55, ease: "power2.in", immediateRender: false }, at);
+        return at + 0.55;
+      }
+      function flipIn(e, at, dir) {
+        e.style.transformOrigin = "50% 50%";
+        return k.move(e, { rotationY: 85 * dir, z: -220, autoAlpha: 0, transformPerspective: 900 }, { rotationY: 0, z: 0, autoAlpha: 1 }, at, 0.8, "power3.out");
+      }
+      // label typed, box in, value flies in from src
+      function fill(r, src, at) {
+        var lt = k.typeText(r.l, at, 0.05);
+        boxIn(r.b, lt + 0.05);
+        fly(r.v, src, lt + 0.3, 0.7);
+        return lt + 1.0;
+      }
+      // every reference lands on the card header at (1508, 222) - g8's main() arrow shape
+      function refArrow(y) {
+        return AR.arrow({ d: y > 300 ? "M1394 " + y + " C 1468 " + y + ", 1436 222, 1508 222" : "M1394 " + y + " C 1450 " + y + ", 1450 222, 1508 222" });
+      }
+      function selfRef(r, at) {             // self: 1000 flies heap -> stack, then the arrow draws
+        var t = fill(r, ADDR, at);
+        var a = refArrow(r.v._c.y);
+        return { a: a, t: AR.draw(a, t, 0.8) };
+      }
+      function heapLine(h, src, at) {
+        var t = k.typeText(h.k, at, 0.05);
+        k.fade(h.eq, t + 0.1, 0.01);
+        return fly(h.v, src, t + 0.25, 0.75) + 0.3;
+      }
+
+      // ================= S31  code shrinks, Stack / Private Heap, the __name__ guard =================
+      var t = cwB.pop(0.3);
+      t = cwB.show(LB, 0.6, 0.04) + 0.8;
+      BEAT.glide = t;
+      cw.show(LOWL, t - 0.6, 0.001);           // fills the (still hidden) memory window
+      k.move(cwB.el, { x: 0, scale: 1 }, { x: -28, scale: 16 / 30 }, t, 1.1, "power3.inOut");
+      tl.fromTo(cwB.el, { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.45, ease: "power1.inOut", immediateRender: false }, t + 0.15);
+      k.move(cw.el, { x: 28, scale: 30 / 16 }, { x: 0, scale: 1 }, t, 1.1, "power3.inOut");
+      tl.fromTo(cw.el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5, ease: "power1.inOut", immediateRender: false }, t + 0.45);
+      t += 1.5;
+      BEAT.panels = t;
+      stack.style.transformOrigin = heap.style.transformOrigin = "50% 50%";
+      flipIn(stack, t, -1); k.typeText(lStack, t + 0.5, 0.05);
+      flipIn(heap, t + 0.6, 1); k.typeText(lHeap, t + 1.1, 0.05);
+      t += 2.4;
+      BEAT.guard = t;
+      t = cw.typeCode(G, t) + 0.8;
+
+      // ================= S32  main(), __new__, object 1000, the child __init__ =================
+      BEAT.main = t;
+      t = push(FM, t) + 1.0;
+      BEAT.nw = t;
+      t = push(FN, t) + 0.6;
+      t = k.typeText(nCls, t, 0.05);
+      boxIn(nClsB.b, t + 0.05);
+      t = fly(nClsB.v, codeAt(13.5, 24, 16), t + 0.3, 0.8) + 0.6;
+      t = k.typeText(nArgs, t, 0.05);
+      k.wipe(strip, t + 0.15, 0.5);
+      idx.forEach(function (e, i) { k.fade(e, t + 0.5 + i * 0.1, 0.25); });
+      t += 0.9;
+      [[8, 7], [17, 5], [24, 10], [36, 2]].forEach(function (p, i) { fly(cells[i], codeAt(14.5, p[0], p[1]), t + i * 0.4, 0.8); });
+      t += 1.2 + 0.8 + 0.8;
+      BEAT.card = t;
+      flipIn(card, t, 1);
+      k.typeText(addr, t + 0.6, 0.06);
+      k.fade(tag, t + 0.9, 0.35);
+      t += 2.0;
+      BEAT.ci = t;
+      t = push(FC, t) + 0.6;
+      var sC = selfRef(CI[0], t);
+      t = sC.t + 0.8;
+      BEAT.unpack = t;
+      for (var i = 1; i < 5; i++) t = fill(CI[i], cells[i - 1]._c, t) + 0.2;
+      t += 0.8;
+
+      // ================= S33  super().__init__ -> Customer.__init__ fills the object =================
+      BEAT.scroll = t;
+      LOWL.concat(G).forEach(function (l) { cw.moveTo(l, l.row + SH, t, 0.7); });
+      cw.show(TOPL, t + 0.35, 0.03);
+      t += 1.6;
+      BEAT.pi = t;
+      t = push(FP, t) + 0.6;
+      var sP = selfRef(PI[0], t);
+      t = sP.t + 0.6;
+      for (var j = 1; j < 4; j++) t = fill(PI[j], CI[j].v._c, t) + 0.2;
+      t += 0.8;
+      BEAT.dict = t;
+      for (var q = 0; q < 3; q++) t = heapLine(HL[q], PI[q + 1].v._c, t) + 0.3;
+      t += 0.6;
+      BEAT.popP = t;
+      popOff([FP, FP.nm], t); AR.undraw(sP.a, t, 0.45);
+      t += 1.2;
+
+      // ================= S34  platinum_id, frames pop, platinum_customer = 1000 =================
+      BEAT.plat = t;
+      t = heapLine(HL[3], CI[4].v._c, t) + 0.9;
+      BEAT.popC = t;
+      popOff([FC, FC.nm], t); AR.undraw(sC.a, t, 0.45);
+      t += 1.2;
+      // __new__ hands the address to main() and its frame goes (g8's main() arrow would cross it)
+      BEAT.popN = t;
+      t = popOff([FN, FN.nm], t) + 0.6;
+      BEAT.ref = t;
+      t = k.typeText(mLab, t, 0.04);
+      boxIn(mBox.b, t + 0.05);
+      t = fly(mBox.v, ADDR, t + 0.3, 0.8);
+      var aM = refArrow(865);
+      t = AR.draw(aM, t, 1.0) + 1.0;
+      BEAT.final = t;
+      t = k.out([cw.el, M.el, AR.el], t, 0.6);
+      window.__g6End = t;
+      window.__timelines["g6-a"] = tl;
+    })();
+  </script>
+</template>

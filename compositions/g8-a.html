@@ -1,0 +1,151 @@
+<template id="g8-a-template">
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+    .g8-panel { position: absolute; box-sizing: border-box; border-style: solid; border-width: 50px; }
+    .g8-lab { position: absolute; text-align: center; white-space: pre; font-family: "Nunito", "Segoe UI", sans-serif;
+      font-weight: 400; font-size: 38px; line-height: 48px; color: #ffffff; }
+    .g8-frame { position: absolute; }
+    .g8-frame svg { position: absolute; left: 0; top: 0; overflow: visible; }
+    .g8-mono { position: absolute; white-space: pre; font-family: "JetBrains Mono", Consolas, monospace; font-weight: 400; font-variant-ligatures: none; }
+    .g8-fname { text-align: right; font-size: 17px; line-height: 24px; color: #8d96ab; }
+    .g8-vb { position: absolute; box-sizing: border-box; background: #0b1836; border: 1.5px solid #3b5ea8; border-radius: 8px; }
+    .g8-card { position: absolute; box-sizing: border-box; border-radius: 14px; border: 1.5px solid rgba(90, 230, 200, 0.45);
+      background: linear-gradient(180deg, #127a68 0px, #0c5c50 44px, #0e1a28 44px, #0b1520 100%);
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.55); }
+    .g8-tag { position: absolute; right: 12px; top: 10px; padding: 0 10px; line-height: 24px; border-radius: 7px;
+      border: 1.5px solid rgba(255, 255, 255, 0.55); background: rgba(255, 255, 255, 0.12);
+      font: 400 15px "JetBrains Mono", Consolas, monospace; color: #e8fff9; white-space: pre; }
+  </style>
+  <div data-hf-id="hf-5qu3" id="root" data-composition-id="g8-a" data-width="1920" data-height="1080" data-duration="30.2"></div>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <script src="assets/kit.js"></script>
+  <script>
+    (function () {
+      var tl = gsap.timeline({ paused: true });
+      var root = document.querySelector('[data-composition-id="g8-a"]');
+      var k = K.make(root, tl);
+      var BEAT = window.__g8aBeats = {};
+
+      // ================= the memory layout state (end of g7: the split return line) =================
+      var cw = k.win({ x: 36, y: 150, w: 600, h: 400, title: "Main.py", dash: true, font: 16, lh: 24 });
+      var C = cw.block(["        else:", "            cost = 250 + delivery_charge", "        return cost", "",
+        "class PlatinumCustomer(Customer):", "",
+        "    def __init__(self,name,address,phone_no,platinum_id):",
+        "        super().__init__(name,address,phone_no)",
+        "        self.platinum_id = platinum_id", "",
+        "    def place_order(self,dish):", "        delivery_charge = 50", "        return",
+        "        (super().place_order(dish) - delivery_charge)*0.95", "", "",
+        "def main():", "    platinum_customer = PlatinumCustomer(", "        'Rohit', 'ITC', 9900887766, 12)",
+        "    print(platinum_customer.place_order('pizza'))", "",
+        "if __name__ == '__main__':", "    main()"], 0);
+      // C: 0 else, 1 cost, 2 return cost, 3 class, 4 def __init__, 5 super, 6 self.platinum_id,
+      //    7 def place_order, 8 delivery_charge, 9 return, 10 (super()..., 11 def main, 12-13 call, 14 print, 15 if, 16 main()
+      var ow = k.win({ x: 1000, y: 150, w: 856, h: 200, title: "output", out: true, font: 30, lh: 43 });
+      var ow2 = k.win({ x: 1000, y: 150, w: 856, h: 200, title: "output", out: true, font: 30, lh: 43 });
+
+      // ---- Stack / Private Heap (shared memory layout) ----
+      var MEM = k.layer({ x: 0, y: 0, w: 1920, h: 1080 });
+      function E(cls, css, html) { var e = k.hide(k.el("div", cls, css, html, MEM.el)); e.setAttribute("data-layout-allow-overflow", "true"); return e; }
+      var stack = E("g8-panel", "left:1010px;top:150px;width:440px;height:810px;border-image:url(assets/mem-stack2.png) 120 fill / 50px stretch;");
+      var heap = E("g8-panel", "left:1478px;top:150px;width:408px;height:810px;border-image:url(assets/mem-heap2.png) 120 fill / 50px stretch;");
+      var labS = E("g8-lab", "left:1010px;top:975px;width:440px;", "Stack");
+      var labH = E("g8-lab", "left:1478px;top:975px;width:408px;", "Private Heap");
+      // main()'s frame at the bottom of the Stack
+      var FT = 810, FH = 110, FC = FT + FH / 2;
+      var frame = E("g8-frame", "left:1030px;top:" + FT + "px;width:400px;height:" + FH + "px;",
+        '<svg width="400" height="' + FH + '" xmlns="http://www.w3.org/2000/svg"><rect x="1.25" y="1.25" width="397.5" height="' + (FH - 2.5) +
+        '" rx="20" fill="rgba(255,255,255,0.03)" stroke="#c8d6ff" stroke-opacity="0.45" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="7 6"/></svg>');
+      var fname = E("g8-mono g8-fname", "left:796px;top:" + (FC - 12) + "px;width:200px;", "main()");
+      var vLab = E("g8-mono", "left:1040px;top:" + (FC - 20) + "px;width:208px;text-align:right;font-size:20px;line-height:40px;color:#ffffff;", "platinum_customer");
+      var vBox = E("g8-vb", "left:1260px;top:" + (FC - 20) + "px;width:130px;height:40px;");
+      var vVal = E("g8-mono", "left:1260px;top:" + (FC - 20) + "px;width:130px;text-align:center;font-size:20px;line-height:40px;color:#ffffff;", "1000");
+      // the PlatinumCustomer object at 1000
+      var CT = 200, card = E("g8-card", "left:1512px;top:" + CT + "px;width:340px;height:194px;");
+      k.el("div", "g8-mono", "left:16px;top:0;font-size:24px;line-height:44px;color:#ffffff;", "1000", card);
+      k.el("div", "g8-tag", null, "PlatinumCustomer", card);
+      [["name", "'Rohit'"], ["address", "'ITC'"], ["phone_no", "9900887766"], ["platinum_id", "12"]].forEach(function (r, i) {
+        var y = 54 + i * 32;
+        k.el("div", "g8-mono", "left:18px;top:" + y + "px;font-size:19px;line-height:32px;color:#9fb4cc;", r[0], card);
+        k.el("div", "g8-mono", "left:160px;top:" + y + "px;font-size:19px;line-height:32px;color:#ffffff;", "= " + r[1], card);
+      });
+      // the reference arrow, on a layer above the panels
+      var ARW = k.layer({ x: 0, y: 0, w: 1920, h: 1080 }, MEM.el);
+      var hy = CT + 22, ref = ARW.arrow({ d: "M1394 " + FC + " C 1468 " + FC + ", 1436 " + hy + ", 1508 " + hy });
+
+      // 3-D entrances (settle with power3.out, no bounce)
+      function flipY(e, at, dir) {
+        e.style.transformOrigin = "50% 50%";
+        return k.move(e, { autoAlpha: 0, rotationY: 80 * dir, z: -220, transformPerspective: 1100 }, { autoAlpha: 1, rotationY: 0, z: 0 }, at, 0.7, "power3.out");
+      }
+      function memOut(at) { return k.out(MEM.el, at, 0.5); }
+      function memIn(at) { return k.fade(MEM.el, at, 0.5); }
+
+      // ================= start on black: the memory state comes in =================
+      BEAT.start = 0.3;
+      cw.show(C, 0.02, 0.001);
+      k.move(cw.el, { autoAlpha: 0, x: -50 }, { autoAlpha: 1, x: 0 }, 0.3, 0.7, "power3.out");
+      flipY(stack, 0.45, -1);
+      flipY(heap, 0.6, 1);
+      k.rise(labS, 0.9, { dy: 20, dur: 0.5 });
+      k.rise(labH, 1.0, { dy: 20, dur: 0.5 });
+      k.move(frame, { autoAlpha: 0, y: -120 }, { autoAlpha: 1, y: 0 }, 0.9, 0.6, "power3.out");
+      k.fade(fname, 1.1, 0.4);
+      [vLab, vBox, vVal].forEach(function (e) { k.fade(e, 1.2, 0.4); });
+      flipY(card, 1.05, 1);
+      var t = ARW.draw(ref, 1.6, 0.6);
+      t += 0.8;
+
+      // ================= S38  run -> RuntimeError: super(): no arguments =================
+      BEAT.s38 = t;
+      t = memOut(t) + 0.15;
+      t = ow.pop(t);
+      t = ow.print("RuntimeError: super(): no arguments", "o-err", t + 0.1);
+      t += 1.8;
+      k.out(ow.el, t, 0.45);
+      t = memIn(t + 0.3);
+      t += 1.0;
+
+      // ================= S39  join the return expression back onto the return line =================
+      BEAT.s39 = t;
+      cw.fade(C[10], t, 0.35);
+      var R = cw.edit(C[9], "        return (super().place_order(dish) - delivery_charge)*0.95", t + 0.15, { per: 0.03 });
+      t = R.t + 0.3;
+      C.slice(11).forEach(function (l) { cw.moveTo(l, l.row - 1, t); });
+      t += 0.45 + 1.2;
+
+      // ================= S40  run -> 475.0 =================
+      BEAT.s40 = t;
+      t = memOut(t) + 0.15;
+      t = ow2.pop(t);
+      t = ow2.print("475.0", "", t + 0.1);
+      t += 1.8;
+      k.out(ow2.el, t, 0.45);
+      t = memIn(t + 0.3);
+
+      // ================= S41  recap: the fixed code with the memory =================
+      BEAT.s41 = t;
+      t += 1.6;
+
+      // ================= S42-S43  the three types of inheritance =================
+      BEAT.s42 = t;
+      k.out([cw.el, MEM.el], t, 0.6);
+      t += 0.6 + 0.5;
+      var TYPES = [["Single Inheritance", "violet"], ["Multilevel Inheritance", "teal"], ["Multiple Inheritance", "orange"]];
+      var chips = TYPES.map(function (d, i) {
+        var c = k.chip({ x: 580, y: 330 + i * 220, w: 760, main: d[0], color: d[1] });
+        var txt = c.querySelector(".k-chip-main");
+        k.move(c, { autoAlpha: 0, rotationX: -100, z: -320, y: -60, transformPerspective: 1100, transformOrigin: "50% 0%" },
+          { autoAlpha: 1, rotationX: 0, z: 0, y: 0 }, t, 0.85, "power3.out");
+        t += 0.85 + 0.4;
+        BEAT["type" + i] = t;
+        t = k.typeText(txt, t, 0.055) + 0.7;
+        return c;
+      });
+      t += 0.8;
+      BEAT.end = t;
+      t = k.out(chips, t, 0.6);
+      window.__g8aEnd = t;
+      window.__timelines["g8-a"] = tl;
+    })();
+  </script>
+</template>

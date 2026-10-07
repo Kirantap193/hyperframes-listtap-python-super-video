@@ -1,0 +1,242 @@
+<template id="g7-a-template">
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+    .g7-pn { position: absolute; top: 150px; height: 810px; box-sizing: border-box; border-style: solid; border-width: 50px; }
+    .g7-stk { left: 1010px; width: 440px; border-image: url("assets/mem-stack2.png") 120 fill / 50px stretch; }
+    .g7-hp { left: 1478px; width: 408px; border-image: url("assets/mem-heap2.png") 120 fill / 50px stretch; }
+    .g7-pl { position: absolute; top: 975px; transform: translateX(-50%); font-family: "Nunito", "Segoe UI", sans-serif;
+      font-weight: 400; font-size: 38px; line-height: 46px; color: #ffffff; white-space: pre; }
+    .g7-fr { position: absolute; left: 1030px; width: 400px; }
+    .g7-fr svg { position: absolute; left: 0; top: 0; overflow: visible; }
+    .g7-nm { position: absolute; right: 434px; line-height: 24px; text-align: right; white-space: pre;
+      font-family: "JetBrains Mono", Consolas, monospace; font-size: 17px; color: #8d96ab; }
+    .g7-lb { position: absolute; height: 38px; line-height: 38px; text-align: right; white-space: pre;
+      font-family: "JetBrains Mono", Consolas, monospace; font-size: 20px; color: #ffffff; }
+    .g7-pk { color: #ffb0c2; }
+    .g7-op { text-align: center; }
+    .g7-bx { position: absolute; height: 38px; box-sizing: border-box; background: #0b1836; border: 1.5px solid #3b5ea8; border-radius: 8px; }
+    .g7-vl { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; white-space: pre;
+      font-family: "JetBrains Mono", Consolas, monospace; font-size: 19px; color: #ffffff; }
+    .g7-card { position: absolute; left: 1512px; top: 200px; width: 340px; height: 194px; box-sizing: border-box; border-radius: 14px;
+      background: linear-gradient(180deg, #127a68 0px, #0c5c50 44px, #0e1a28 44px, #0b1520 100%);
+      border: 1.5px solid rgba(90, 230, 200, 0.45); box-shadow: 0 8px 22px rgba(0, 0, 0, 0.55); }
+    .g7-card::after { content: "PlatinumCustomer"; position: absolute; right: 12px; top: 8px; padding: 0 10px; line-height: 24px;
+      border: 1.5px solid rgba(255, 255, 255, 0.55); border-radius: 7px; background: rgba(255, 255, 255, 0.12);
+      font: 400 15px "JetBrains Mono", Consolas, monospace; color: #e8fff9; }
+    .g7-ad { position: absolute; left: 15px; top: -1.5px; line-height: 44px; font-family: "JetBrains Mono", Consolas, monospace; font-size: 24px; color: #ffffff; }
+    .g7-ck { position: absolute; line-height: 32px; white-space: pre; font-family: "JetBrains Mono", Consolas, monospace; font-size: 19px; }
+  </style>
+  <div data-hf-id="hf-7b7m" id="root" data-composition-id="g7-a" data-width="1920" data-height="1080" data-duration="36.55"></div>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <script src="assets/kit.js"></script>
+  <script>
+    (function () {
+      var tl = gsap.timeline({ paused: true });
+      var root = document.querySelector('[data-composition-id="g7-a"]');
+      var k = K.make(root, tl);
+      var IR = { immediateRender: false };
+      var BEAT = window.__g7aBeats = {};
+      function at(e, from, to, t, dur, ease) { tl.fromTo(e, from, Object.assign({ duration: dur, ease: ease || "power3.out" }, to, IR), t); return t + dur; }
+
+      // ================= code window at the memory size (Example 2, full code) =================
+      var cw = k.win({ x: 36, y: 150, w: 600, h: 400, title: "Main.py", dash: true, font: 16, lh: 24 });
+      var C = cw.block(["class Customer:", "",
+        "    def __init__(self,name,address,phone_no):", "        self.name = name", "        self.address = address", "        self.phone_no = phone_no", "",
+        "    def place_order(self,dish):", "        cost = 0", "        delivery_charge = 50", "        if dish == 'pizza':",
+        "            cost = 500 + delivery_charge", "        else:", "            cost = 250 + delivery_charge", "        return cost", "",
+        "class PlatinumCustomer(Customer):", "",
+        "    def __init__(self,name,address,phone_no,platinum_id):", "        super().__init__(name,address,phone_no)", "        self.platinum_id = platinum_id", "",
+        "    def place_order(self,dish):", "        delivery_charge = 50", "        return (super().place_order(dish) - delivery_charge)*0.95", "", "",
+        "def main():", "    platinum_customer = PlatinumCustomer(", "        'Rohit', 'ITC', 9900887766, 12)", "    print(platinum_customer.place_order('pizza'))", "",
+        "if __name__ == '__main__':", "    main()"], 0);
+      var RET = 19;   // index of the child's return line in C
+
+      // ================= Stack / Private Heap =================
+      var TOP = k.layer({ x: 0, y: 0, w: 1920, h: 1080 });   // arrows: re-appended on top of the panels below
+      var stack = k.hide(k.el("div", "g7-pn g7-stk"));
+      var heap = k.hide(k.el("div", "g7-pn g7-hp"));
+      var lbS = k.hide(k.el("div", "g7-pl", "left:1230px;", "Stack"));
+      var lbH = k.hide(k.el("div", "g7-pl", "left:1682px;", "Private Heap"));
+      [stack, heap].forEach(function (e) { e.setAttribute("data-layout-allow-overflow", "true"); });
+
+      // the PlatinumCustomer object at 1000
+      var card = k.hide(k.el("div", "g7-card"));
+      var addr = k.el("div", "g7-ad", null, "1000", card);
+      [["name", "'Rohit'"], ["address", "'ITC'"], ["phone_no", "9900887766"], ["platinum_id", "12"]].forEach(function (kv, i) {
+        k.el("div", "g7-ck", "left:15px;top:" + (53 + i * 32) + "px;color:#9fb4cc;", kv[0], card);
+        k.el("div", "g7-ck", "left:147px;top:" + (53 + i * 32) + "px;color:#ffffff;", K.esc("= " + kv[1]), card);
+      });
+      [addr].concat([].slice.call(card.children)).forEach(function (e) { e.setAttribute("data-layout-allow-overlap", "true"); });
+      var ADDR = { x: 1528 + 2 * 14.4, y: 222, f: 24 };   // centre of the card's "1000"
+
+      // a stack frame (dashed), its name outside the Stack (right-aligned to x 996)
+      function frame(top, h, name) {
+        var g = k.hide(k.el("div", "g7-fr", "top:" + top + "px;height:" + h + "px;"));
+        g.setAttribute("data-layout-allow-overflow", "true");
+        g.innerHTML = '<svg width="400" height="' + h + '"><rect x="1.25" y="1.25" width="397.5" height="' + (h - 2.5) +
+          '" rx="20" fill="rgba(255,255,255,0.03)" stroke="#c8d6ff" stroke-opacity="0.45" stroke-width="2.5" stroke-dasharray="7 6"/></svg>';
+        k.el("div", "g7-nm", "top:" + (h / 2 - 12) + "px;", name, g);
+        g.top = top; return g;
+      }
+      // a labelled value box inside frame g: label right-aligned before the box (relative coords)
+      function slot(g, label, lw, bx, bw, y, pink, h) {
+        h = h || 38;
+        var s = { g: g, w: bw, cx: 1030 + bx + bw / 2, cy: g.top + y + h / 2 }, hc = "height:" + h + "px;line-height:" + h + "px;";
+        if (label) s.lab = k.hide(k.el("div", "g7-lb" + (pink ? " g7-pk" : ""), "left:" + (bx - 12 - lw) + "px;width:" + lw + "px;top:" + y + "px;" + hc, label, g));
+        s.box = k.hide(k.el("div", "g7-bx", "left:" + bx + "px;width:" + bw + "px;top:" + y + "px;" + hc, null, g));
+        s.box.setAttribute("data-layout-allow-overflow", "true");
+        return s;
+      }
+      function val(s, text) { var v = k.hide(k.el("div", "g7-vl", null, K.esc(text), s.box)); v.setAttribute("data-layout-allow-overlap", "true"); s.box.setAttribute("data-layout-allow-overlap", "true"); return v; }
+      function opText(g, x, w, y, text) { return k.hide(k.el("div", "g7-lb g7-op", "left:" + x + "px;width:" + w + "px;top:" + y + "px;", K.esc(text), g)).setAttribute("data-layout-allow-overlap", "true") || g.lastChild; }
+
+      function boxIn(s, t) {
+        if (s.lab) k.fade(s.lab, t, 0.3);
+        at(s.box, { autoAlpha: 0, scale: 0.55, transformPerspective: 600, rotationX: -60 }, { autoAlpha: 1, scale: 1, rotationX: 0 }, t + 0.15, 0.45);
+        return t + 0.6;
+      }
+      function typeVal(v, t) { return k.typeText(v, t, 0.07); }
+      // a copy of a value glides from (sx, sy) into its box (the source stays)
+      function fly(v, s, src, t, dur) {
+        var sc = (src.f || 19) / 19;
+        tl.fromTo(v, { autoAlpha: 0 }, Object.assign({ autoAlpha: 1, duration: 0.15, ease: "power1.out" }, IR), t);
+        return at(v, { x: src.x - s.cx, y: src.y - s.cy, scale: sc }, { x: 0, y: 0, scale: 1 }, t, dur || 0.75, "power2.inOut");
+      }
+      function push(g, t) {
+        tl.fromTo(g, { autoAlpha: 0 }, Object.assign({ autoAlpha: 1, duration: 0.3, ease: "power1.out" }, IR), t);
+        return at(g, { y: -360 }, { y: 0 }, t, 0.8, "power3.out");
+      }
+      function popFrame(g, t) { return at(g, { y: 0, autoAlpha: 1 }, { y: -70, autoAlpha: 0 }, t, 0.6, "power2.in"); }
+
+      // main(): platinum_customer -> 1000
+      var fMain = frame(810, 110, "main()");
+      var sPC = slot(fMain, "platinum_customer", 206, 230, 130, 35, false, 40);   // label ends at x 1248, box 1260
+      var vPC = val(sPC, "1000");
+      var arMain = TOP.arrow({ d: "M1394 865 C 1468 865, 1436 222, 1508 222" });
+
+      // child place_order(): dish, self / delivery_charge / the expression row
+      var fChild = frame(612, 186, "place_order()");
+      var cDish = slot(fChild, "dish", 52, 76, 100, 20), cSelf = slot(fChild, "self", 52, 256, 110, 20, true);
+      var cDel = slot(fChild, "delivery_charge", 180, 204, 70, 74);
+      var vcDish = val(cDish, "'pizza'"), vcSelf = val(cSelf, "1000"), vcDel = val(cDel, "50");
+      var eA = slot(fChild, null, 0, 20, 70, 128), eB = slot(fChild, null, 0, 122, 60, 128);
+      var eC = slot(fChild, null, 0, 20, 80, 128), eD = slot(fChild, null, 0, 20, 100, 128);
+      var veA = val(eA, "550"), veB = val(eB, "50"), veC = val(eC, "500"), veD = val(eD, "475.0");
+      var opMinus = opText(fChild, 94, 24, 128, "-"), opTimes = opText(fChild, 108, 80, 128, "* 0.95");
+      var arChild = TOP.arrow({ d: "M1398 651 C 1460 651, 1444 222, 1508 222" });
+
+      // parent place_order(): dish, self / cost / delivery_charge
+      var fPar = frame(414, 186, "place_order()");
+      var pDish = slot(fPar, "dish", 52, 76, 100, 20), pSelf = slot(fPar, "self", 52, 256, 110, 20, true);
+      var pCost = slot(fPar, "cost", 52, 76, 80, 74), pDel = slot(fPar, "delivery_charge", 180, 204, 70, 128);
+      var vpDish = val(pDish, "'pizza'"), vpSelf = val(pSelf, "1000"), vpCost0 = val(pCost, "0"), vpCost = val(pCost, "550"), vpDel = val(pDel, "50");
+      var arPar = TOP.arrow({ d: "M1398 453 C 1456 453, 1448 222, 1508 222" });
+
+      // the value the child returns travels down into main() (print takes it)
+      var ret = k.hide(k.el("div", "g7-bx", "left:1050px;top:740px;width:100px;"));
+      ret.setAttribute("data-layout-allow-overlap", "true");
+      k.el("div", "g7-vl", null, "475.0", ret);
+      root.appendChild(TOP.el);
+
+      // ================= start: bring in the state g6 ended on =================
+      C.forEach(function (L) { L.showAt = 0; });
+      var t = cw.pop(0.1);
+      cw.show(C, 0.12, 0.004);
+      function flipIn(e, t0) { return at(e, { autoAlpha: 0, rotationY: -80, transformPerspective: 1200 }, { autoAlpha: 1, rotationY: 0 }, t0, 0.75); }
+      flipIn(stack, 0.2); flipIn(heap, 0.32);
+      k.fade(lbS, 0.5, 0.4); k.fade(lbH, 0.6, 0.4);
+      k.fade(fMain, 0.7, 0.4);
+      [sPC.lab, sPC.box, vPC].forEach(function (e) { k.fade(e, 0.7, 0.4); });
+      at(card, { autoAlpha: 0, rotationY: 70, transformPerspective: 1200 }, { autoAlpha: 1, rotationY: 0 }, 0.75, 0.7);
+      t = TOP.draw(arMain, 1.2, 0.6);
+
+      // ================= S35  platinum_customer.place_order('pizza'): the child's frame =================
+      t += 0.9; BEAT.s35 = t;
+      t = push(fChild, t) + 0.6;
+      boxIn(cSelf, t);
+      t = fly(vcSelf, cSelf, ADDR, t + 0.5);
+      t = TOP.draw(arChild, t, 0.7) + 0.6;
+      BEAT.dish = t;
+      boxIn(cDish, t);
+      t = typeVal(vcDish, t + 0.6) + 0.9;
+      BEAT.del = t;
+      boxIn(cDel, t);
+      t = typeVal(vcDel, t + 0.6) + 1.0;
+
+      // Enter splits the return line: "return" stays, the expression drops to its own line
+      BEAT.split = t;
+      var R = C[RET], tail = "        (super().place_order(dish) - delivery_charge)*0.95";
+      C.slice(RET + 1).forEach(function (L) { cw.moveTo(L, L.row + 1, t, 0.4); });
+      cw.edit(R, "        return", t);
+      var T = cw.add(tail, R.row + 1);
+      T.showAt = t;
+      T.chars.forEach(function (c) { tl.fromTo(c, { autoAlpha: 0 }, Object.assign({ autoAlpha: 1, duration: 0.01, ease: "none" }, IR), t); });
+      at(T.el, { x: 7 * cw.CW, y: -cw.LH }, { x: 0, y: 0 }, t, 0.45, "power2.inOut");
+      var bar = k.hide(k.el("div", "k-ring k-edit c-neon", "left:" + Math.round(8 * cw.CW - 10) + "px;width:" + Math.round((tail.length - 8) * cw.CW + 20) +
+        "px;top:1px;bottom:1px;", null, T.el));
+      T.el.insertBefore(bar, T.el.firstChild);
+      at(bar, { autoAlpha: 0, scaleX: 0, transformOrigin: "0% 50%" }, { autoAlpha: 1, scaleX: 1 }, t + 0.45, 0.3, "power2.out");
+      at(bar, { autoAlpha: 1 }, { autoAlpha: 0 }, t + 1.4, 0.3, "power1.inOut");
+      t += 2.2;
+
+      // ================= S36  super().place_order(dish): the parent's frame =================
+      BEAT.s36 = t;
+      t = push(fPar, t) + 0.6;
+      boxIn(pSelf, t);
+      t = fly(vpSelf, pSelf, ADDR, t + 0.5);
+      t = TOP.draw(arPar, t, 0.7) + 0.6;
+      BEAT.pdish = t;
+      boxIn(pDish, t);
+      t = fly(vpDish, pDish, { x: cDish.cx, y: cDish.cy }, t + 0.5) + 0.9;
+      BEAT.cost = t;
+      boxIn(pCost, t);
+      t = typeVal(vpCost0, t + 0.6) + 0.6;
+      boxIn(pDel, t);
+      t = typeVal(vpDel, t + 0.6) + 1.2;
+      // dish == 'pizza': cost = 500 + delivery_charge -> 550
+      BEAT.c550 = t;
+      at(vpCost0, { y: 0, autoAlpha: 1 }, { y: -16, autoAlpha: 0 }, t, 0.3, "power2.in");
+      t = typeVal(vpCost, t + 0.35) + 1.2;
+      // return cost: 550 goes back to the child's waiting expression
+      BEAT.ret550 = t;
+      at(eA.box, { autoAlpha: 0, scale: 0.55 }, { autoAlpha: 1, scale: 1 }, t, 0.4);
+      t = fly(veA, eA, { x: pCost.cx, y: pCost.cy }, t + 0.1, 0.85) + 0.5;
+      TOP.undraw(arPar, t, 0.4);
+      t = popFrame(fPar, t + 0.1) + 1.0;
+
+      // ================= S37  the child: (550 - 50)*0.95 = 475.0, returns, frame pops =================
+      BEAT.s37 = t;
+      k.fade(opMinus, t, 0.3);
+      at(eB.box, { autoAlpha: 0, scale: 0.55 }, { autoAlpha: 1, scale: 1 }, t + 0.2, 0.4);
+      t = fly(veB, eB, { x: cDel.cx, y: cDel.cy }, t + 0.3) + 0.8;
+      BEAT.m500 = t;
+      [eA.box, opMinus, eB.box].forEach(function (e, i) {
+        at(e, { x: 0, autoAlpha: 1 }, { x: [10, -40, -90][i], autoAlpha: 0 }, t, 0.4, "power2.in");
+      });
+      at(eC.box, { autoAlpha: 0, scale: 0.6 }, { autoAlpha: 1, scale: 1 }, t + 0.3, 0.45);
+      k.fade(veC, t + 0.3, 0.3);
+      t += 1.5;
+      BEAT.times = t;
+      t = k.fade(opTimes, t, 0.4) + 0.9;
+      BEAT.r475 = t;
+      [eC.box, opTimes].forEach(function (e, i) { at(e, { x: 0, autoAlpha: 1 }, { x: [10, -60][i], autoAlpha: 0 }, t, 0.4, "power2.in"); });
+      at(eD.box, { autoAlpha: 0, scale: 0.6 }, { autoAlpha: 1, scale: 1 }, t + 0.3, 0.45);
+      k.fade(veD, t + 0.3, 0.3);
+      t += 1.8;
+      // return: 475.0 goes down to main() (print takes it), the child's frame pops
+      BEAT.pop = t;
+      TOP.undraw(arChild, t, 0.4);
+      popFrame(fChild, t);
+      tl.fromTo(ret, { autoAlpha: 0 }, Object.assign({ autoAlpha: 1, duration: 0.05, ease: "none" }, IR), t);
+      at(ret, { x: 0, y: 0 }, { x: 200, y: 70 }, t, 0.8, "power2.inOut");
+      t = at(ret, { autoAlpha: 1 }, { autoAlpha: 0 }, t + 0.45, 0.45, "power1.inOut");
+      t += 1.2;
+
+      // ================= end: everything fades out =================
+      BEAT.end = t;
+      t = k.out([cw.el, stack, heap, lbS, lbH, fMain, card, arMain.g], t, 0.6);
+      window.__g7aEnd = t;
+      window.__timelines["g7-a"] = tl;
+    })();
+  </script>
+</template>

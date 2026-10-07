@@ -1,0 +1,279 @@
+<template id="g3-a-template">
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+    .g3-panel { position: absolute; box-sizing: border-box; border-style: solid; border-width: 50px; }
+    .g3-stack { border-image: url("assets/mem-stack2.png") 120 fill / 50px stretch; }
+    .g3-heap { border-image: url("assets/mem-heap2.png") 120 fill / 50px stretch; }
+    .g3-plab { position: absolute; text-align: center; font-family: "Nunito", "Segoe UI", sans-serif; font-weight: 400;
+      font-size: 38px; line-height: 46px; color: #ffffff; white-space: pre; }
+    .g3-fr { position: absolute; }
+    .g3-fr svg { position: absolute; left: 0; top: 0; overflow: visible; }
+    .g3-mono { font-family: "JetBrains Mono", Consolas, monospace; font-variant-ligatures: none; font-weight: 400; white-space: pre; }
+    .g3-fn { position: absolute; text-align: right; font-size: 17px; line-height: 22px; color: #8d96ab; }
+    .g3-lab { position: absolute; font-size: 20px; line-height: 40px; color: #ffffff; }
+    .g3-pink { color: #ffb0c2; }
+    .g3-box { position: absolute; box-sizing: border-box; background: #0b1836; border: 1.5px solid #3b5ea8; border-radius: 8px; }
+    .g3-val { position: absolute; text-align: center; color: #ffffff; }
+    .g3-div { position: absolute; top: 0; bottom: 0; width: 1.5px; background: #3b5ea8; }
+    .g3-idx { position: absolute; text-align: center; font-size: 15px; line-height: 20px; color: #c9d2e8; }
+    .g3-card { position: absolute; box-sizing: border-box; border-radius: 14px; border: 1.5px solid rgba(90, 230, 200, 0.45);
+      background: linear-gradient(180deg, #127a68 0px, #0c5c50 44px, #0e1a28 44px, #0b1520 100%);
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.55); }
+    .g3-addr { position: absolute; left: 14px; top: 0; font-size: 24px; line-height: 42px; color: #ffffff; }
+    .g3-tag { position: absolute; right: 12px; top: 8px; padding: 0 10px; line-height: 24px; font-size: 15px; color: #e8fff9;
+      border: 1.5px solid rgba(255, 255, 255, 0.55); border-radius: 7px; background: rgba(255, 255, 255, 0.12); }
+    .g3-cl { position: absolute; left: 16px; font-size: 19px; line-height: 38px; color: #ffffff; }
+    .g3-k { color: #9fb4cc; }
+    .g3-flyl { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+    .g3-fly { position: absolute; color: #ffffff; }
+  </style>
+  <div data-hf-id="hf-wtok" id="root" data-composition-id="g3-a" data-width="1920" data-height="1080" data-duration="56.6"></div>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <script src="assets/kit.js"></script>
+  <script>
+    (function () {
+      var tl = gsap.timeline({ paused: true });
+      var root = document.querySelector('[data-composition-id="g3-a"]');
+      var k = K.make(root, tl);
+      var BEAT = window.__g3aBeats = {};
+      var MONO = 0.6;   // JetBrains Mono advance (em)
+
+      function D(cls, css, html, parent) { return k.hide(k.el("div", cls, css, html, parent)); }
+      function at(x, y, w, h) {
+        return "left:" + x + "px;top:" + y + "px;" + (w != null ? "width:" + w + "px;" : "") + (h != null ? "height:" + h + "px;" : "");
+      }
+
+      // ================= S14  the final Example-1 code, then the memory-size window =================
+      var CODE = ["class Customer:", "", "    def __init__(self,name,phone,email):", "        self.name = name",
+        "        self.phone = phone", "        self.email = email", "", "",
+        "class PlatinumCustomer(Customer):", "", "    def __init__(self,name,phone,email,platinum_id):",
+        "        super().__init__(name,phone,email)", "        self.platinum_id = platinum_id", "",
+        "    def display(self):", "        print(self.__dict__)", "",
+        "def main():", "    platinum_customer = PlatinumCustomer(", "        'Rohit', 9900887766,'rohit@gmail.com', 10)",
+        "    platinum_customer.display()", "", "if __name__ == '__main__':", "    main()"];
+      var cw = k.win({ x: 64, y: 150, w: 900, h: 400, title: "Main.py", dash: true, font: 30, lh: 43 });
+      var BIG = cw.block(CODE.slice(0, 21), 0);           // font 30: 18 rows fit (main() guard below the fold)
+      var cwM = k.win({ x: 36, y: 150, w: 600, h: 400, title: "Main.py", dash: true, font: 16, lh: 24 });
+      var SM = cwM.block(CODE, 0);
+      [cw.el, cwM.el].forEach(function (e) { e.setAttribute("data-layout-allow-overlap", "true"); });
+
+      // ================= memory: panels, frames, heap card =================
+      var stack = D("g3-panel g3-stack", at(1010, 150, 440, 810));
+      var heap = D("g3-panel g3-heap", at(1478, 150, 408, 810));
+      var labS = D("g3-plab", at(1010, 975, 440), "Stack");
+      var labH = D("g3-plab", at(1478, 975, 408), "Private Heap");
+
+      function frame(top, h, name, nameTop) {
+        var f = D("g3-fr", at(1030, top, 400, h));
+        f.setAttribute("data-layout-allow-overflow", "true");
+        f.innerHTML = '<svg width="400" height="' + h + '"><rect x="1.25" y="1.25" width="397.5" height="' + (h - 2.5) +
+          '" rx="20" fill="rgba(255,255,255,0.03)" stroke="#c8d6ff" stroke-opacity="0.45" stroke-width="2.5" stroke-dasharray="7 6"/></svg>';
+        var n = D("g3-fn g3-mono", at(600, nameTop, 396), name);
+        return { el: f, x: 1030, y: top, name: n };
+      }
+      // a label inside a frame (absolute x, y)
+      function lab(F, text, x, y, pink) { return D("g3-lab g3-mono" + (pink ? " g3-pink" : ""), at(x - F.x, y - F.y), text, F.el); }
+      // a value box inside a frame; .v is its (hidden) value, .cx/.cy/.fs locate it for flights
+      function box(F, text, x, y, w, fs) {
+        var b = D("g3-box", at(x - F.x, y - F.y, w, 40), null, F.el);
+        b.v = D("g3-val g3-mono", at(0, 0, w - 3) + "line-height:37px;font-size:" + fs + "px;", text, b);
+        b.cx = x + w / 2; b.cy = y + 20; b.fs = fs; b.text = text; b.right = x + w;
+        return b;
+      }
+
+      var FM = frame(825, 100, "main()", 864);
+      var FN = frame(601, 210, "__new__<br>(cls,*args,**kwargs)", 684);
+      var FC = frame(407, 180, "__init__", 486);
+      var FP = frame(213, 180, "__init__", 292);
+
+      // __new__: cls, then the *args tuple in two rows of cells, indices 0-3 above
+      var clsL = lab(FN, "cls", 1048, 619, true), clsB = box(FN, "'PlatinumCustomer'", 1100, 619, 230, 18);
+      var argsL = lab(FN, "*args", 1048, 690, true);
+      function tupleRow(x, y, cells, i0) {
+        var W = 0; cells.forEach(function (c) { W += c[1]; });
+        var row = D("g3-box", at(x - FN.x, y - FN.y, W + 3, 38), null, FN.el), cx = 0, res = [];
+        cells.forEach(function (c, i) {
+          if (i) k.el("div", "g3-div", "left:" + (cx - 0.75) + "px;", null, row);
+          var v = D("g3-val g3-mono", at(cx, 0, c[1]) + "line-height:35px;font-size:18px;", c[0], row);
+          var ix = D("g3-idx g3-mono", at(x + cx - FN.x, y - 21 - FN.y, c[1]), String(i0 + i), FN.el);
+          res.push({ v: v, ix: ix, cx: x + 1.5 + cx + c[1] / 2, cy: y + 19, fs: 18, text: c[0] });
+          cx += c[1];
+        });
+        res.row = row; return res;
+      }
+      var R1 = tupleRow(1124, 691, [["'Rohit'", 96], ["9900887766", 128]], 0);
+      var R2 = tupleRow(1124, 755, [["'rohit@gmail.com'", 204], ["10", 48]], 2);
+      var CELLS = R1.concat(R2);
+
+      // PlatinumCustomer.__init__ (child) and Customer.__init__ (parent): self + parameters
+      function initFrame(F, child) {
+        var y1 = F.y + 18, y2 = y1 + 52, y3 = y2 + 52, P = {};
+        P.selfL = lab(F, "self", 1290, y3, true); P.self = box(F, "1000", 1346, y3, 68, 20);
+        P.nameL = lab(F, "name", 1048, y1); P.name = box(F, "'Rohit'", 1104, y1, 92, 18);
+        P.phoneL = lab(F, "phone", 1212, y1); P.phone = box(F, "9900887766", 1280, y1, 128, 18);
+        P.emailL = lab(F, "email", 1048, y2); P.email = box(F, "'rohit@gmail.com'", 1116, y2, 204, 18);
+        if (child) { P.pidL = lab(F, "platinum_id", 1048, y3); P.pid = box(F, "10", 1192, y3, 48, 18); }
+        return P;
+      }
+      var PC = initFrame(FC, true), PP = initFrame(FP, false);
+      var pcL = lab(FM, "platinum_customer", 1048, 855), pcB = box(FM, "1000", 1346, 855, 68, 20);
+
+      // the object at 1000 in the Private Heap: a card (teal header with the address + class tag)
+      var card = D("g3-card", at(1512, 440, 340, 218));
+      card.setAttribute("data-layout-allow-overflow", "true");
+      k.el("div", "g3-addr g3-mono", null, "1000", card);
+      k.el("div", "g3-tag g3-mono", null, "PlatinumCustomer", card);
+      var ADDR = { cx: 1512 + 1.5 + 14 + 4 * 24 * MONO / 2, cy: 440 + 1.5 + 21, fs: 24 };
+      function cardLine(i, key, val) {
+        var L = k.el("div", "g3-cl g3-mono", "top:" + (50 + i * 38) + "px;", null, card);
+        var kw = k.hide(k.el("span", null, null, '<span class="g3-k">' + key + "</span> = ", L));
+        var v = k.hide(k.el("span", null, null, val, L));
+        var x0 = 1512 + 1.5 + 16 + (key.length + 3) * 19 * MONO;
+        return { kw: kw, v: v, cx: x0 + val.length * 19 * MONO / 2, cy: 440 + 1.5 + 50 + i * 38 + 19, fs: 19, text: val };
+      }
+      var CL = [cardLine(0, "name", "'Rohit'"), cardLine(1, "phone", "9900887766"),
+        cardLine(2, "email", "'rohit@gmail.com'"), cardLine(3, "platinum_id", "10")];
+
+      // arrows (on top of the panels) and the flight layer (above everything)
+      var TOP = k.layer({ x: 0, y: 0, w: 1920, h: 1080 });
+      var arC = TOP.arrow({ d: "M1416 549 C 1468 549, 1456 471, 1506 471" });
+      var arP = TOP.arrow({ d: "M1416 355 C 1468 355, 1456 455, 1506 455" });
+      var arM = TOP.arrow({ d: "M1416 875 C 1494 875, 1440 465, 1506 465" });
+      var FLY = k.el("div", "g3-flyl", null, null);
+      FLY.setAttribute("data-layout-allow-overflow", "true"); FLY.setAttribute("data-layout-allow-overlap", "true");
+
+      // ---------------- motion helpers ----------------
+      function flipY(e, t, dir) {
+        e.style.transformOrigin = "50% 50%";
+        return k.move(e, { rotationY: 80 * dir, z: -160, autoAlpha: 0, transformPerspective: 1200 },
+          { rotationY: 0, z: 0, autoAlpha: 1 }, t, 0.8, "power3.out");
+      }
+      function boxIn(e, t) {
+        e.style.transformOrigin = "50% 50%";
+        return k.move(e, { scale: 0.4, autoAlpha: 0 }, { scale: 1, autoAlpha: 1 }, t, 0.4, "power3.out");
+      }
+      function push(F, t) {
+        k.move(F.el, { y: -360, autoAlpha: 0 }, { y: 0, autoAlpha: 1 }, t, 0.8, "power3.out");
+        return k.typeText(F.name, t + 0.5, 0.03);
+      }
+      function popFrame(F, t, ar) {
+        k.move(F.el, { y: 0, autoAlpha: 1 }, { y: -70, autoAlpha: 0 }, t, 0.6, "power2.in");
+        k.out(F.name, t, 0.5);
+        if (ar) TOP.undraw(ar, t, 0.45);
+        return t + 0.6;
+      }
+      // a copy of the value glides from src to dst (dst = a box or a card line), then dst shows it
+      function fly(src, dst, t, dur) {
+        dur = dur || 0.75;
+        var f = D("g3-fly g3-mono", "left:" + dst.cx + "px;top:" + dst.cy + "px;font-size:" + dst.fs + "px;line-height:" +
+          Math.round(dst.fs * 1.3) + "px;", dst.text, FLY);
+        tl.fromTo(f, { xPercent: -50, yPercent: -50, x: src.cx - dst.cx, y: src.cy - dst.cy, scale: src.fs / dst.fs },
+          { xPercent: -50, yPercent: -50, x: 0, y: 0, scale: 1, duration: dur, ease: "power2.inOut", immediateRender: false }, t);
+        tl.fromTo(f, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.12, ease: "none", immediateRender: false }, t);
+        tl.fromTo(f, { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.01, ease: "none", immediateRender: false }, t + dur);
+        tl.fromTo(dst.v, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01, ease: "none", immediateRender: false }, t + dur);
+        return t + dur;
+      }
+      // label types, box comes in, value flies from src
+      function param(L, B, src, t) {
+        t = k.typeText(L, t, 0.035);
+        boxIn(B, t + 0.05);
+        return fly(src, B, t + 0.3) + 0.35;
+      }
+      // card line: key and "=" type in, the value flies from the Stack box
+      function heapLine(C, src, t) {
+        t = k.typeText(C.kw, t, 0.035);
+        return fly(src, C, t + 0.15) + 0.5;
+      }
+
+      // ---------------- S14 ----------------
+      var t = cw.pop(0.3);
+      t = cw.show(BIG, t, 0.05);
+      t += 1.0;
+      BEAT.s14shrink = t;
+      // dissolve/glide: the font-30 window shrinks onto the memory-size window as they crossfade
+      var s = 16 / 30, W = cw.hugW(), H = cw.fit(BIG.endRow);
+      k.move(cw.el, { x: 0, y: 0, scale: 1 }, { x: 36 - 64 - W * (1 - s) / 2, y: -H * (1 - s) / 2, scale: s }, t, 0.9, "power3.inOut");
+      k.move(cw.el, { autoAlpha: 1 }, { autoAlpha: 0 }, t + 0.35, 0.5, "power1.in");
+      k.move(cwM.el, { scale: 1.04, autoAlpha: 0 }, { scale: 1, autoAlpha: 1 }, t + 0.55, 0.55, "power2.out");
+      cwM.show(SM, t, 0.001);
+      t += 1.6;
+
+      // ---------------- S15: Stack + Private Heap, main(), __new__, the empty object ----------------
+      BEAT.s15 = t;
+      flipY(stack, t, -1); k.fade(labS, t + 0.5, 0.4);
+      flipY(heap, t + 0.35, 1); k.fade(labH, t + 0.85, 0.4);
+      t += 1.6;
+      t = push(FM, t) + 0.8;
+      BEAT.s15new = t;
+      t = push(FN, t) + 0.7;
+      t = k.typeText(clsL, t, 0.035);
+      boxIn(clsB, t + 0.05);
+      t = k.typeText(clsB.v, t + 0.4, 0.035) + 0.6;
+      t = k.typeText(argsL, t, 0.035);
+      boxIn(R1.row, t + 0.1); boxIn(R2.row, t + 0.25);
+      t += 0.6;
+      CELLS.forEach(function (c) {
+        k.typeText(c.ix, t, 0.03);
+        t = k.typeText(c.v, t + 0.15, 0.035) + 0.3;
+      });
+      t += 0.5;
+      BEAT.s15obj = t;
+      card.style.transformOrigin = "50% 50%";
+      t = k.move(card, { rotationX: -80, z: -200, autoAlpha: 0, transformPerspective: 1000 }, { rotationX: 0, z: 0, autoAlpha: 1 }, t, 0.8, "power3.out");
+      t += 1.0;
+
+      // ---------------- S16: child __init__ - self gets 1000, the tuple unpacks into the parameters ----------------
+      BEAT.s16 = t;
+      t = push(FC, t) + 0.6;
+      t = k.typeText(PC.selfL, t, 0.035);
+      boxIn(PC.self, t + 0.05);
+      t = fly(ADDR, PC.self, t + 0.3) + 0.1;
+      t = TOP.draw(arC, t, 0.8) + 0.6;
+      BEAT.s16params = t;
+      t = param(PC.nameL, PC.name, CELLS[0], t);
+      t = param(PC.phoneL, PC.phone, CELLS[1], t);
+      t = param(PC.emailL, PC.email, CELLS[2], t);
+      t = param(PC.pidL, PC.pid, CELLS[3], t);
+      // ---------------- S17: super().__init__(name,phone,email) - a teaching pause ----------------
+      BEAT.s17 = t;
+      t += 1.6;
+
+      // ---------------- S18: parent __init__ on the same object fills name / phone / email ----------------
+      BEAT.s18 = t;
+      t = push(FP, t) + 0.6;
+      t = k.typeText(PP.selfL, t, 0.035);
+      boxIn(PP.self, t + 0.05);
+      t = fly(ADDR, PP.self, t + 0.3) + 0.1;
+      t = TOP.draw(arP, t, 0.8) + 0.6;
+      t = param(PP.nameL, PP.name, PC.name, t);
+      t = param(PP.phoneL, PP.phone, PC.phone, t);
+      t = param(PP.emailL, PP.email, PC.email, t) + 0.4;
+      BEAT.s18dict = t;
+      t = heapLine(CL[0], PP.name, t);
+      t = heapLine(CL[1], PP.phone, t);
+      t = heapLine(CL[2], PP.email, t) + 0.6;
+      BEAT.s18pop = t;
+      t = popFrame(FP, t, arP) + 0.9;
+
+      // ---------------- S19: platinum_id, the child frame pops, main() gets the object, __new__ pops ----------------
+      BEAT.s19 = t;
+      t = heapLine(CL[3], PC.pid, t) + 0.6;
+      t = popFrame(FC, t, arC) + 0.8;
+      BEAT.s19main = t;
+      t = k.typeText(pcL, t, 0.035);
+      boxIn(pcB, t + 0.05);
+      t = fly(ADDR, pcB, t + 0.3) + 0.1;
+      t = TOP.draw(arM, t, 0.9) + 0.6;
+      t = popFrame(FN, t) + 0.8;
+
+      // ---------------- S20: recap hold, then everything fades out ----------------
+      BEAT.s20 = t;
+      t += 0.9;
+      BEAT.end = t;
+      t = k.out([cwM.el, stack, heap, labS, labH, FM.el, FM.name, card, TOP.el, FLY], t, 0.6);
+      window.__g3aEnd = t;
+      window.__timelines["g3-a"] = tl;
+    })();
+  </script>
+</template>

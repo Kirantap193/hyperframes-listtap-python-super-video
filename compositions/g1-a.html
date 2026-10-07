@@ -1,0 +1,91 @@
+<template id="g1-a-template">
+  <style> #root { position: absolute; inset: 0; overflow: hidden; pointer-events: none; } </style>
+  <div data-hf-id="hf-72e8" id="root" data-composition-id="g1-a" data-width="1920" data-height="1080" data-duration="62.9"></div>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <script src="assets/kit.js"></script>
+  <script>
+    (function () {
+      var tl = gsap.timeline({ paused: true });
+      var root = document.querySelector('[data-composition-id="g1-a"]');
+      var k = K.make(root, tl);
+      var BEAT = window.__g1aBeats = {};
+
+      // ================= Example 1, before super(): the child repeats the parent's assignments =================
+      var cw = k.win({ x: 64, y: 150, w: 900, h: 400, title: "Main.py", dash: true, font: 30, lh: 43 });
+      var L = cw.block(["class Customer:", "",
+        "    def __init__(self,name,phone,email):",
+        "        self.name = name", "        self.phone = phone", "        self.email = email", "", "",
+        "class PlatinumCustomer(Customer):", "",
+        "    def __init__(self,name,phone,email,platinum_id):",
+        "        self.name = name", "        self.phone = phone", "        self.email = email",
+        "        self.platinum_id = platinum_id", "",
+        "    def display(self):", "        print(self.__dict__)", "",
+        "def main():", "    PlatinumCustomer(", "        'Rohit', 9900887766,'rohit@gmail.com', 10)",
+        "    platinum_customer.display()", "",
+        "if __name__ == '__main__':", "    main()"], 0);
+      // L: 0 class Customer, 1 def __init__, 2-4 assignments, 5 class PlatinumCustomer, 6 def __init__,
+      //    7-10 assignments, 11 def display, 12 print, 13 def main, 14-15 the call, 16 display(), 17 if, 18 main()
+      var ow = k.win({ x: 1000, y: 150, w: 856, h: 200, title: "output", out: true, font: 30, lh: 43 });
+
+      // ================= S03  class Customer with its constructor =================
+      var t = cw.pop(0.3);
+      BEAT.s03 = t;
+      t = cw.typeCode(L.slice(0, 5), t + 0.3);
+      t += 1.2;
+
+      // ================= S04  class PlatinumCustomer(Customer): =================
+      BEAT.s04 = t;
+      t = cw.type(L[5], t);
+      t += 1.8;
+
+      // ================= S05  the overriding __init__ repeats name / phone / email =================
+      BEAT.s05 = t;
+      t = cw.typeCode(L.slice(6, 11), t);
+      t += 1.2;
+
+      // ================= S06  display(self) prints the instance dictionary =================
+      BEAT.s06 = t;
+      t = cw.typeCode(L.slice(11, 13), t);
+      t += 1.2;
+
+      // ================= S07  main(): the object is created =================
+      BEAT.s07 = t;
+      t = cw.typeCode(L.slice(13, 15), t);
+      t += 0.5;
+      // the code no longer fits: the editor scrolls - the top lines leave, the rest slides up;
+      // a blank row keeps the window height steady while the rest is typed
+      var hold = cw.add("", 17); hold.row = -1;
+      cw.show(hold, t);
+      BEAT.scroll = t;
+      cw.fade(L.slice(0, 4), t, 0.25);
+      L.slice(4).forEach(function (l) { cw.moveTo(l, l.row - 4.5, t); });
+      t += 0.7;
+      t = cw.type(L[15], t);
+      t += 1.2;
+
+      // ================= S08  a reference, display() and the __name__ guard =================
+      BEAT.s08 = t;
+      var Lref = cw.edit(L[14], "    platinum_customer = PlatinumCustomer(", t);
+      t = Lref.t + 1.2;
+      t = cw.type(L[16], t);
+      t += 1.0;
+      t = cw.type(L[17], t);
+      t += 0.8;
+      t = cw.type(L[18], t);
+      t += 0.6;
+
+      // ================= S09  run: the instance dictionary =================
+      BEAT.s09 = t;
+      t = ow.pop(t);
+      ["{'name': 'Rohit',", " 'phone': 9900887766,", " 'email': 'rohit@gmail.com',", " 'platinum_id': 10}"]
+        .forEach(function (s) { t = ow.print(s, "", t + 0.12); });
+      t += 1.8;
+
+      // end: everything fades out
+      BEAT.end = t;
+      t = k.out([cw.el, ow.el], t, 0.6);
+      window.__g1aEnd = t;
+      window.__timelines["g1-a"] = tl;
+    })();
+  </script>
+</template>
