@@ -159,8 +159,9 @@
       var chips = [hub].concat(conns, bars, LET.title1, LET.title2);
       ["single", "multiple", "multilevel"].forEach(function (key, i) {
         BEAT["conn" + i] = t;
-        tl.fromTo(conns[i], { autoAlpha: 1, clipPath: "inset(0% 69.5% 0% 0%)" },
-          { clipPath: "inset(0% 60% 0% 0%)", duration: 0.6, ease: "power2.inOut", immediateRender: false }, t);
+        // the connector grows out of the circle (scale from the circle's centre + fade; no clip-path)
+        conns[i].style.transformOrigin = (316 * SC) + "px " + (459 * SC) + "px";
+        tl.fromTo(conns[i], { autoAlpha: 0, scale: 0.86 }, { autoAlpha: 1, scale: 1, duration: 0.6, ease: "power2.out", immediateRender: false }, t);
         t += 0.6;
         bars[i].style.transformOrigin = (690 * SC) + "px 50%";
         k.move(bars[i], { autoAlpha: 0, rotationY: 70, x: 60, z: -200, transformPerspective: 1300 }, { autoAlpha: 1, rotationY: 0, x: 0, z: 0 }, t, 0.8, "power3.out");
@@ -171,7 +172,11 @@
       });
       t += 0.8;
       BEAT.end = t;
-      t = k.out(chips, t, 0.6);
+      // swap the pieces for the single finished art (identical pixels) so the fade has no seams
+      var whole = piece(FULL, 0, 0, TX.size[0], TX.size[1]);
+      tl.fromTo(whole, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01, ease: "none", immediateRender: false }, t);
+      tl.fromTo(chips, { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.01, ease: "none", immediateRender: false }, t + 0.01);
+      t = k.out(whole, t + 0.02, 0.6);
       window.__g8aEnd = t;
       window.__timelines["g8-a"] = tl;
     })();

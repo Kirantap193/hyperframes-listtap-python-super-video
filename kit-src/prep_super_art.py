@@ -34,15 +34,24 @@ shutil.copy2(SRC / "3.webp", ASSET / "types-of-inheritance-single-multiple-multi
 rgb = np.array(Image.open(SRC / "3.webp").convert("RGB")).astype(np.int16)
 H, W = rgb.shape[:2]
 mx, mn = rgb.max(axis=2), rgb.min(axis=2)
-grey = (mx - mn < 18) & (mn > 70)           # checkerboard (also where the art's shadow darkens it)
+grey = (mx - mn < 14) & (mn > 22)           # checkerboard (also where the art's shadow darkens it)
 lab, _ = ndimage.label(grey)
 border = set(np.unique(np.concatenate([lab[0], lab[-1], lab[:, 0], lab[:, -1]]))) - {0}
 bg = np.isin(lab, list(border))
 bg = ndimage.binary_opening(bg, iterations=1)
-alpha = np.where(bg, 0, 255).astype(np.uint8)
-# soften the 1-px rim so edges do not show checker fringe
-edge = ndimage.binary_dilation(bg, iterations=1) & ~bg
-alpha[edge] = 120
+# smooth matte: the noise background makes a ragged binary cut, so smooth the SHAPE, ramp the edge
+# over ~2 px, and recolour the rim from just inside (no grey fringe)
+fg = ndimage.binary_opening(ndimage.binary_closing(~bg, iterations=3), iterations=3)
+lab_, n_ = ndimage.label(fg)
+sizes = ndimage.sum(fg, lab_, range(1, n_ + 1))
+fg = np.isin(lab_, 1 + np.where(sizes > 3000)[0])          # drop stray specks of background noise
+soft = ndimage.gaussian_filter(fg.astype(float), 1.3)
+alpha = (np.clip((soft - 0.5) * 2.4 + 0.5, 0, 1) * 255).astype(np.uint8)
+inner = ndimage.binary_erosion(fg, iterations=3)
+_, (iy, ix) = ndimage.distance_transform_edt(~inner, return_indices=True)
+rim = ~inner
+rgb[rim] = rgb[iy[rim], ix[rim]]
+bg = alpha == 0
 rgba = np.dstack([rgb.astype(np.uint8), alpha])
 full = Image.fromarray(rgba, "RGBA")
 full.save(ASSET / "types-of-inheritance-transparent.png")
