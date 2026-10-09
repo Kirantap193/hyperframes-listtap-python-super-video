@@ -1,0 +1,43 @@
+<template id="g0-a-template">
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+    .g0-ty { position: absolute; }
+  </style>
+  <div data-hf-id="hf-81ut" id="root" data-composition-id="g0-a" data-width="1920" data-height="1080" data-duration="5.4"></div>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <script src="assets/kit.js"></script>
+  <script>
+    (function () {
+      var tl = gsap.timeline({ paused: true });
+      var root = document.querySelector('[data-composition-id="g0-a"]');
+      var k = K.make(root, tl);
+
+      // topic intro: the trainer's super() title art - the panel (with its Parent / Child Class windows)
+      // flips in, then the word super() TYPES on letter by letter (crops of the final art at their spots)
+      var TT = { size: [2000, 666], y0: 212, y1: 552, segs: [[664, 859], [859, 1071], [1071, 1280], [1280, 1493], [1493, 1639], [1639, 1757], [1757, 1875]] };
+      var S = 0.86, OX = (1920 - TT.size[0] * S) / 2, OY = 596 - TT.size[1] * S / 2, AW = TT.size[0] * S;
+      function piece(src, x0, y0, x1, y1) {
+        return k.hide(k.el("div", "g0-ty", "left:" + (OX + x0 * S) + "px;top:" + (OY + y0 * S) + "px;width:" + ((x1 - x0) * S) +
+          "px;height:" + ((y1 - y0) * S) + "px;background:url(assets/" + src + ") " + (-x0 * S) + "px " + (-y0 * S) + "px / " + AW + "px auto no-repeat;"));
+      }
+      var plate = piece("g0-title-plate.png", 0, 0, TT.size[0], TT.size[1]);
+      var letters = TT.segs.map(function (sg) { return piece("g0-title.png", sg[0], TT.y0, sg[1], TT.y1); });
+      var whole = piece("g0-title.png", 0, 0, TT.size[0], TT.size[1]);
+
+      var t = 0.3;
+      plate.style.transformOrigin = "50% 50%";
+      k.move(plate, { autoAlpha: 0, rotationX: -70, z: -320, transformPerspective: 1400 }, { autoAlpha: 1, rotationX: 0, z: 0 }, t, 0.95, "power3.out");
+      t += 0.95 + 0.5;
+      letters.forEach(function (e, i) {
+        tl.fromTo(e, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01, ease: "none", immediateRender: false }, t + i * 0.18);
+      });
+      t += letters.length * 0.18 + 1.6;
+      // swap the pieces for the finished art (identical pixels) so the fade has no seams
+      tl.fromTo(whole, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01, ease: "none", immediateRender: false }, t);
+      tl.fromTo([plate].concat(letters), { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.01, ease: "none", immediateRender: false }, t + 0.01);
+      t = k.out(whole, t + 0.02, 0.6);
+      window.__g0aEnd = t;
+      window.__timelines["g0-a"] = tl;
+    })();
+  </script>
+</template>

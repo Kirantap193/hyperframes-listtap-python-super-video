@@ -25,7 +25,7 @@ def mounts(group):
 
 
 seq = []
-for g in ('g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7', 'g8', 'g9', 'g10'):
+for g in ('g0', 'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7', 'g8', 'g9', 'g10'):
     seq += [m for m in mounts(g) if (PARTS / g / m[1]).exists()]
 
 rows, t = [], 0.0

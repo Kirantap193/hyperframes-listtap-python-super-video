@@ -1,7 +1,7 @@
 # super() in Python — TAP Academy lesson video (HyperFrames)
 
 An animated rebuild of the TAP Academy lecture "super() in Python" (61 storyboard scenes, 45:42 of
-lecture → a 7:26 video), made with [HyperFrames](https://hyperframes.heygen.com) (HTML + GSAP).
+lecture → a 7:33 video), made with [HyperFrames](https://hyperframes.heygen.com) (HTML + GSAP).
 1920×1080, 30 fps, no audio.
 
 ## Preview it
@@ -30,16 +30,17 @@ npx --yes hyperframes@0.8.58 render --quality delivery -o renders/python-super.m
 
 | Start | Scenes | Composition | Content |
 |---|---|---|---|
-| 0:00.0 | S03–S09 | `g1-a` | Example 1 typed: Customer, PlatinumCustomer (repeated assignments), display(), main(), dict output |
-| 1:02.9 | S10–S13 | `g2-a` | Duplicated lines deleted, `super().__init__(name,phone,email)` typed, same output |
-| 1:24.1 | S14–S20 | `g3-a` | Stack / Private Heap trace of constructor chaining |
-| 2:20.7 | S21–S24 | `g4-a` | Example 2 Customer with `place_order`; pizza 500 / burger 250 |
-| 2:58.8 | S25–S30 | `g5-a` | PlatinumCustomer overrides `place_order`: `return (super().place_order(dish) - delivery_charge)*0.95` |
-| 3:50.5 | S31–S34 | `g6-a` | Memory trace of building the object |
-| 4:54.7 | S35–S37 | `g7-a` | Memory trace of `place_order('pizza')`: 550 → 475.0 |
-| 5:26.6 | S38–S43 | `g8-a` | `RuntimeError: super(): no arguments`, the fix, 475.0, three types of inheritance |
-| 5:59.8 | S44–S54 | `g9-a` | Multilevel A ← B ← C with `super(C,self)` / `super(B,self)` |
-| 6:42.9 | S55–S61 | `g10-a` | Multiple inheritance C(A,B): `help()` MRO, output A C |
+| 0:00.0 | S01–S02 | `g0-a` | Topic intro: the super() title art, the word types on |
+| 0:05.4 | S03–S09 | `g1-a` | Example 1 typed: Customer, PlatinumCustomer (repeated assignments), display(), main(), dict output |
+| 1:08.3 | S10–S13 | `g2-a` | Duplicated lines deleted, `super().__init__(name,phone,email)` typed, same output |
+| 1:29.5 | S14–S20 | `g3-a` | Stack / Private Heap trace of constructor chaining |
+| 2:26.1 | S21–S24 | `g4-a` | Example 2 Customer with `place_order`; pizza 500 / burger 250 |
+| 3:04.2 | S25–S30 | `g5-a` | PlatinumCustomer overrides `place_order`: `return (super().place_order(dish) - delivery_charge)*0.95` |
+| 3:55.9 | S31–S34 | `g6-a` | Memory trace of building the object |
+| 5:00.1 | S35–S37 | `g7-a` | Memory trace of `place_order('pizza')`: 550 → 475.0 |
+| 5:32.0 | S38–S43 | `g8-a` | `RuntimeError: super(): no arguments`, the fix, 475.0, three types of inheritance |
+| 6:06.8 | S44–S54 | `g9-a` | Multilevel A ← B ← C with `super(C,self)` / `super(B,self)` |
+| 6:49.9 | S55–S61 | `g10-a` | Multiple inheritance C(A,B): `help()` MRO, output A C |
 
 ## What is in here
 
