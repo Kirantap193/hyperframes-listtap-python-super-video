@@ -1,6 +1,8 @@
 <template id="g5-a-template">
-  <style> #root { position: absolute; inset: 0; overflow: hidden; pointer-events: none; } </style>
-  <div data-hf-id="hf-q99w" id="root" data-composition-id="g5-a" data-width="1920" data-height="1080" data-duration="51.7"></div>
+  <style> #root { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+    /* static font reference so the part render embeds JetBrains Mono, as the merged video-15 does */
+    .g5-font { font-family: "JetBrains Mono", Consolas, monospace; } </style>
+  <div data-hf-id="hf-hm0z" id="root" data-composition-id="g5-a" data-width="1920" data-height="1080" data-duration="51.2"></div>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
   <script src="assets/kit.js"></script>
   <script>
@@ -123,11 +125,10 @@
       Lpr = cw.edit(Lpr, "    print(platinum_customer.place_order('pizza')", t);
       t = Lpr.t + 0.4;
       Lpr = cw.edit(Lpr, "    print(platinum_customer.place_order('pizza'))", t);
-      t = Lpr.t + 1.6;
+      t = Lpr.t + 1.7;                          // edit highlight gone at +1.2, then a 0.5 s clean hold
 
-      // ================= end: fade to black =================
+      // ================= end: HOLD the final code (no fade) - g6 starts on this exact frame =================
       BEAT.end = t;
-      t = k.out([cw.el], t, 0.6);
       window.__g5aEnd = t;
       // width: the kit fixes the window at its widest line for the whole scene; instead start at
       // g4's width and grow only when a longer line starts being typed (queued after the kit's sizing)

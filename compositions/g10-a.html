@@ -1,6 +1,6 @@
 <template id="g10-a-template">
   <style> #root { position: absolute; inset: 0; overflow: hidden; pointer-events: none; } </style>
-  <div data-hf-id="hf-j6ro" id="root" data-composition-id="g10-a" data-width="1920" data-height="1080" data-duration="43.08"></div>
+  <div data-hf-id="hf-t7ir" id="root" data-composition-id="g10-a" data-width="1920" data-height="1080" data-duration="43.9"></div>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
   <script src="assets/kit.js"></script>
   <script>
@@ -55,7 +55,8 @@
         " |  " + "-".repeat(70), " |  Data descriptors inherited from A:", " |"];
       t += 0.15;
       HELP.forEach(function (s, i) { ow.print(s, "", t + i * 0.12); });
-      t += HELP.length * 0.12 + 0.5;
+      // wait until the LONGEST line has finished typing (0.03 s a character), then hold
+      t += Math.max.apply(null, HELP.map(function (s, i) { return i * 0.12 + s.length * 0.03; })) + 0.4;
       t += 1.6;                            // the MRO: C, then A, then B
 
       // ================= S59  comment help, call c_object.test(), add print('C') =================

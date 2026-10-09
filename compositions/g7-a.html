@@ -32,7 +32,7 @@
       background: linear-gradient(180deg, #127a68 0px, #0c5c50 44px, #0e1a28 44px, #0b1520 100%);
       border: 1.5px solid rgba(90, 230, 200, 0.45); box-shadow: 0 8px 22px rgba(0, 0, 0, 0.55); }
   </style>
-  <div data-hf-id="hf-tjqp" id="root" data-composition-id="g7-a" data-width="1920" data-height="1080" data-duration="26.4"></div>
+  <div data-hf-id="hf-z98i" id="root" data-composition-id="g7-a" data-width="1920" data-height="1080" data-duration="22.5"></div>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
   <script src="assets/kit.js"></script>
   <script>
@@ -134,21 +134,21 @@
       function popFrame(g, t) { return at(g, { y: 0, autoAlpha: 1 }, { y: -70, autoAlpha: 0 }, t, 0.6, "power2.in"); }
 
       // main()'s reference to 1000 (already drawn at t = 0, as g6 left it)
-      var arMain = TOP.arrow({ d: "M1394 865 C 1472 865, 1472 300, 1508 300" });
+      var arMain = TOP.arrow({ d: "M1394 865 C 1472 865, 1472 350, 1508 350" });
 
       // child place_order(): dish, self / delivery_charge / the expression row
       var fChild = frame(612, 186, "place_order()");
       var cDish = slot(fChild, "dish", 52, 76, 100, 20), cSelf = slot(fChild, "self", 52, 256, 110, 20, true);
       var cDel = slot(fChild, "delivery_charge", 180, 204, 70, 74);
       var vcDish = val(cDish, "'pizza'"), vcSelf = val(cSelf, "1000"), vcDel = val(cDel, "50");
-      var arChild = TOP.arrow({ d: "M1398 651 C 1461 651, 1461 268, 1508 268" });
+      var arChild = TOP.arrow({ d: "M1398 651 C 1461 651, 1461 290, 1508 290" });
 
       // parent place_order(): dish, self / cost / delivery_charge
       var fPar = frame(414, 186, "place_order()");
       var pDish = slot(fPar, "dish", 52, 76, 100, 20), pSelf = slot(fPar, "self", 52, 256, 110, 20, true);
       var pCost = slot(fPar, "cost", 52, 76, 80, 74), pDel = slot(fPar, "delivery_charge", 180, 204, 70, 128);
       var vpDish = val(pDish, "'pizza'"), vpSelf = val(pSelf, "1000"), vpCost0 = val(pCost, "0"), vpCost = val(pCost, "550"), vpDel = val(pDel, "50");
-      var arPar = TOP.arrow({ d: "M1398 453 C 1450 453, 1450 236, 1508 236" });
+      var arPar = TOP.arrow({ d: "M1398 453 C 1450 453, 1450 232, 1508 232" });
 
       root.appendChild(TOP.el);
 
@@ -201,11 +201,10 @@
       t += 2.4;                                    // the trainer explains 550 - 50 = 500, 95% of 500 = 475.0
       BEAT.pop = t;
       TOP.undraw(arChild, t, 0.4);
-      t = popFrame(fChild, t) + 1.4;               // back in main(): only platinum_customer -> 1000 is left
+      t = popFrame(fChild, t) + 0.6;               // back in main(): only platinum_customer -> 1000 is left
 
-      // ================= end: everything fades out =================
+      // ================= end: HOLD this state (g8 starts on the identical frame and runs the program) =================
       BEAT.end = t;
-      t = k.out([cw.el, M.el, arMain.g], t, 0.6);
       window.__g7aEnd = t;
       window.__timelines["g7-a"] = tl;
     })();
