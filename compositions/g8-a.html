@@ -17,7 +17,7 @@
       border: 1.5px solid rgba(255, 255, 255, 0.55); background: rgba(255, 255, 255, 0.12);
       font: 400 15px "JetBrains Mono", Consolas, monospace; color: #e8fff9; white-space: pre; }
   </style>
-  <div data-hf-id="hf-zx26" id="root" data-composition-id="g8-a" data-width="1920" data-height="1080" data-duration="33.2"></div>
+  <div id="root" data-composition-id="g8-a" data-width="1920" data-height="1080" data-duration="33.9"></div>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
   <script src="assets/kit.js"></script>
   <script>
@@ -129,54 +129,51 @@
       BEAT.s42 = t;
       k.out([cw.el, MEM.el], t, 0.6);
       t += 0.6 + 0.5;
-      // the user's Types-of-Inheritance art: clean plate pieces enter in 3-D, then each label TYPES on
-      // (letters are crops of the final art at their exact spots, so the end frame is the art itself)
-      var TX = {"size":[1774,887],"lines":[{"key":"title1","y0":365,"y1":456,"segs":[[174,263],[263,308],[308,350],[350,407],[407,450],[450,492]]},{"key":"title2","y0":456,"y1":534,"segs":[[130,150],[150,196],[196,241],[241,287],[287,316],[316,334],[334,365],[365,408],[408,451],[451,489],[489,541]]},{"key":"single","y0":131,"y1":221,"segs":[[900,942],[942,960],[960,999],[999,1041],[1041,1057],[1057,1098],[1098,1125],[1125,1141],[1141,1219],[1219,1260],[1260,1293],[1293,1311],[1311,1351],[1351,1390],[1390,1431],[1431,1456],[1456,1472],[1472,1501],[1501,1541],[1541,1580],[1580,1614],[1614,1665]]},{"key":"multiple","y0":400,"y1":497,"segs":[[937,1009],[1009,1055],[1055,1072],[1072,1106],[1106,1127],[1127,1175],[1175,1194],[1194,1260],[1260,1281],[1281,1328],[1328,1372],[1372,1419],[1419,1448],[1448,1466],[1466,1497],[1497,1542],[1542,1585],[1585,1624],[1624,1677]]},{"key":"multilevel","y0":674,"y1":753,"segs":[[908,974],[974,1018],[1018,1033],[1033,1064],[1064,1084],[1084,1115],[1115,1132],[1132,1172],[1172,1214],[1214,1256],[1256,1291],[1291,1309],[1309,1350],[1350,1390],[1390,1432],[1432,1457],[1457,1473],[1473,1501],[1501,1542],[1542,1581],[1581,1617],[1617,1668]]}]};
-      var SC = 0.9, OX = 162, OY = 196, AW = TX.size[0] * SC;
-      function piece(src, x0, y0, x1, y1) {
-        return k.hide(k.el("div", "g8-ty", "left:" + (OX + x0 * SC) + "px;top:" + (OY + y0 * SC) + "px;width:" +
-          ((x1 - x0) * SC) + "px;height:" + ((y1 - y0) * SC) + "px;background:url(assets/" + src + ") " + (-x0 * SC) + "px " +
-          (-y0 * SC) + "px / " + AW + "px auto no-repeat;"));
+      // the user's Types-of-Inheritance PARTS (clean edges): the circle alone, its title types on,
+      // then for each type a sky-blue arrow draws out of the circle, its bar swings in, its label types on
+      var TP = {"hub":{"size":[546,531],"lines":[{"y0":178,"y1":261,"segs":[[143,224],[224,266],[266,304],[304,354],[354,394],[394,432]]},{"y0":261,"y1":334,"segs":[[97,115],[115,156],[156,196],[196,238],[238,266],[266,281],[281,310],[310,349],[349,388],[388,425],[425,475]]}],"centre":[275.0,264.5]},"bar1":{"size":[987,183],"lines":[{"y0":49,"y1":133,"segs":[[216,254],[254,271],[271,307],[307,347],[347,361],[361,401],[401,428],[428,442],[442,478],[478,515],[515,553],[553,584],[584,600],[600,638],[638,675],[675,714],[714,738],[738,753],[753,779],[779,817],[817,854],[854,889],[889,938]]}]},"bar2":{"size":[987,184],"lines":[{"y0":47,"y1":137,"segs":[[221,283],[283,325],[325,340],[340,371],[371,390],[390,437],[437,453],[453,517],[517,536],[536,580],[580,622],[622,667],[667,696],[696,712],[712,741],[741,784],[784,828],[828,868],[868,921]]}]},"bar3":{"size":[987,185],"lines":[{"y0":50,"y1":123,"segs":[[220,280],[280,320],[320,334],[334,363],[363,382],[382,410],[410,426],[426,463],[463,503],[503,544],[544,578],[578,596],[596,636],[636,675],[675,716],[716,742],[742,757],[757,783],[783,822],[822,860],[860,897],[897,947]]}]}};
+      var PART = { hub: { x: 110, y: 361, s: 0.88 }, bar1: { x: 1000, y: 304, s: 0.82 }, bar2: { x: 1000, y: 519, s: 0.82 }, bar3: { x: 1000, y: 734, s: 0.82 } };
+      function piece(name, src, x0, y0, x1, y1) {
+        var P = PART[name], S = P.s, w = TP[name].size[0] * S;
+        return k.hide(k.el("div", "g8-ty", "left:" + (P.x + x0 * S) + "px;top:" + (P.y + y0 * S) + "px;width:" + ((x1 - x0) * S) +
+          "px;height:" + ((y1 - y0) * S) + "px;background:url(assets/" + src + ") " + (-x0 * S) + "px " + (-y0 * S) + "px / " + w + "px auto no-repeat;"));
       }
-      var FULL = "g8-types.png";
-      function layer(n) { return piece("g8-ty-" + n + ".png", 0, 0, TX.size[0], TX.size[1]); }
-      var hub = layer("circle"), conns = [layer("conn1"), layer("conn2"), layer("conn3")];
-      var bars = [layer("bar1"), layer("bar2"), layer("bar3")];
-      var LET = {};
-      TX.lines.forEach(function (ln) { LET[ln.key] = ln.segs.map(function (sg) { return piece(FULL, sg[0], ln.y0, sg[1], ln.y1); }); });
-      function typeOn(key, at, per) {
-        LET[key].forEach(function (e, i) { tl.fromTo(e, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01, ease: "none", immediateRender: false }, at + i * per); });
-        return at + LET[key].length * per;
+      function whole(name, plate) { return piece(name, "g8p-" + name + (plate ? "-plate" : "") + ".png", 0, 0, TP[name].size[0], TP[name].size[1]); }
+      function letters(name, line) {
+        var ln = TP[name].lines[line];
+        return ln.segs.map(function (sg) { return piece(name, "g8p-" + name + ".png", sg[0], ln.y0, sg[1], ln.y1); });
       }
-      // 1) only the circle, 2) its title types on, 3) each type: connector draws out of the circle,
-      //    its bar swings in, its label types on - Single-level, Multiple, Multi-level
-      hub.style.transformOrigin = (316 * SC) + "px " + (459 * SC) + "px";
+      function typeOn(els, at, per) {
+        els.forEach(function (e, i) { tl.fromTo(e, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01, ease: "none", immediateRender: false }, at + i * per); });
+        return at + els.length * per;
+      }
+      var hub = whole("hub", true), T1 = letters("hub", 0), T2 = letters("hub", 1);
+      hub.style.transformOrigin = "50% 50%";
       k.move(hub, { autoAlpha: 0, rotationY: -85, z: -260, transformPerspective: 1100 }, { autoAlpha: 1, rotationY: 0, z: 0 }, t, 0.85, "power3.out");
       t += 0.85 + 0.4;
       BEAT.title = t;
-      t = typeOn("title1", t, 0.07) + 0.15;
-      t = typeOn("title2", t, 0.07) + 0.6;
-      var chips = [hub].concat(conns, bars, LET.title1, LET.title2);
-      ["single", "multiple", "multilevel"].forEach(function (key, i) {
-        BEAT["conn" + i] = t;
-        // the connector grows out of the circle (scale from the circle's centre + fade; no clip-path)
-        conns[i].style.transformOrigin = (316 * SC) + "px " + (459 * SC) + "px";
-        tl.fromTo(conns[i], { autoAlpha: 0, scale: 0.86 }, { autoAlpha: 1, scale: 1, duration: 0.6, ease: "power2.out", immediateRender: false }, t);
-        t += 0.6;
-        bars[i].style.transformOrigin = (690 * SC) + "px 50%";
-        k.move(bars[i], { autoAlpha: 0, rotationY: 70, x: 60, z: -200, transformPerspective: 1300 }, { autoAlpha: 1, rotationY: 0, x: 0, z: 0 }, t, 0.8, "power3.out");
+      t = typeOn(T1, t, 0.07) + 0.15;
+      t = typeOn(T2, t, 0.07) + 0.6;
+      var PATHS = ["M 588 512 C 720 450, 830 384, 984 384", "M 604 597 C 720 597, 860 597, 984 597", "M 588 682 C 720 744, 830 810, 984 810"];
+      var pieces = [hub].concat(T1, T2), arrows = [], fulls = [whole("hub")];
+      ["bar1", "bar2", "bar3"].forEach(function (name, i) {
+        var bar = whole(name, true), L = letters(name, 0), ar = k.arrow({ d: PATHS[i] });
+        BEAT["arrow" + i] = t;
+        t = k.draw(ar, t, 0.6);
+        bar.style.transformOrigin = "0% 50%";
+        k.move(bar, { autoAlpha: 0, rotationY: 70, x: 60, z: -200, transformPerspective: 1300 }, { autoAlpha: 1, rotationY: 0, x: 0, z: 0 }, t, 0.8, "power3.out");
         t += 0.8 + 0.4;
         BEAT["type" + i] = t;
-        t = typeOn(key, t, 0.055) + 0.7;
-        chips = chips.concat(LET[key]);
+        t = typeOn(L, t, 0.055) + 0.7;
+        pieces = pieces.concat([bar], L); arrows.push(ar); fulls.push(whole(name));
       });
       t += 0.8;
       BEAT.end = t;
-      // swap the pieces for the single finished art (identical pixels) so the fade has no seams
-      var whole = piece(FULL, 0, 0, TX.size[0], TX.size[1]);
-      tl.fromTo(whole, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01, ease: "none", immediateRender: false }, t);
-      tl.fromTo(chips, { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.01, ease: "none", immediateRender: false }, t + 0.01);
-      t = k.out(whole, t + 0.02, 0.6);
+      // swap the pieces for the finished parts (identical pixels) so the fade has no seams
+      tl.fromTo(fulls, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01, ease: "none", immediateRender: false }, t);
+      tl.fromTo(pieces, { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.01, ease: "none", immediateRender: false }, t + 0.01);
+      arrows.forEach(function (ar) { k.undraw(ar, t + 0.02, 0.6); });
+      t = k.out(fulls, t + 0.02, 0.6);
       window.__g8aEnd = t;
       window.__timelines["g8-a"] = tl;
     })();
