@@ -1,7 +1,7 @@
 # super() in Python — TAP Academy lesson video (HyperFrames)
 
 An animated rebuild of the TAP Academy lecture "super() in Python" (61 storyboard scenes, 45:42 of
-lecture → a 7:21 video), made with [HyperFrames](https://hyperframes.heygen.com) (HTML + GSAP).
+lecture → a 7:26 video), made with [HyperFrames](https://hyperframes.heygen.com) (HTML + GSAP).
 1920×1080, 30 fps, no audio.
 
 ## Preview it
@@ -38,8 +38,8 @@ npx --yes hyperframes@0.8.58 render --quality delivery -o renders/python-super.m
 | 3:50.5 | S31–S34 | `g6-a` | Memory trace of building the object |
 | 4:54.7 | S35–S37 | `g7-a` | Memory trace of `place_order('pizza')`: 550 → 475.0 |
 | 5:26.6 | S38–S43 | `g8-a` | `RuntimeError: super(): no arguments`, the fix, 475.0, three types of inheritance |
-| 5:54.8 | S44–S54 | `g9-a` | Multilevel A ← B ← C with `super(C,self)` / `super(B,self)` |
-| 6:37.9 | S55–S61 | `g10-a` | Multiple inheritance C(A,B): `help()` MRO, output A C |
+| 5:59.8 | S44–S54 | `g9-a` | Multilevel A ← B ← C with `super(C,self)` / `super(B,self)` |
+| 6:42.9 | S55–S61 | `g10-a` | Multiple inheritance C(A,B): `help()` MRO, output A C |
 
 ## What is in here
 

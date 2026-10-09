@@ -72,7 +72,8 @@ for key, (x0, y0, x1, y1) in boxes.items():
     mask[py0:py1, px0:px1] = keep * 255
     if key == "title":   # stay inside the hub's inner ring (centre 328,459, inner radius ~215)
         yy, xx = np.mgrid[0:H, 0:W]
-        mask[(xx - 328) ** 2 + (yy - 459) ** 2 > 203 ** 2] = 0
+        mask[(xx - 328) ** 2 + (yy - 459) ** 2 > 214 ** 2] = 0
+        mask[py0:py1, px0:px1][cream[py0:py1, px0:px1]] = 255   # every letter pixel, even at the ring
     if key == "title":
         plate = cv2.inpaint(plate.astype(np.uint8), mask, 15, cv2.INPAINT_TELEA).astype(np.int16)
     else:   # bars shade only vertically: fill each masked row with that row's colour just right of the label
@@ -124,3 +125,32 @@ for key, (x0, y0, x1, y1) in [("title1", (tb[0], tb[1], tb[2], mid)), ("title2",
     lines.append({"key": key, "y0": int(y0), "y1": int(y1), "segs": sg})
     print(key, len(sg), "letters")
 (OUT / "g8" / "assets" / "g8-types-text.json").write_text(json.dumps({"size": [W, H], "lines": lines}))
+
+# ---------- layers (full-canvas PNGs, same origin): circle, connectors 1-3, bars 1-3 ----------
+pl = np.array(Image.open(OUT / "g8" / "assets" / "g8-types-plate.png"))
+yy, xx = np.mgrid[0:H, 0:W]
+# hub inner disk: replace with a smooth cubic fit of the orange fill (no inpaint streaks)
+r2 = (xx - 328) ** 2 + (yy - 459) ** 2
+txt = ndimage.binary_dilation(cream, iterations=16); txt = txt | np.roll(txt, 10, axis=0)
+fitm = (r2 < 208 ** 2) & ~txt
+X = np.stack([np.ones_like(xx), xx, yy, xx * xx, xx * yy, yy * yy, xx ** 3, xx * xx * yy, xx * yy * yy, yy ** 3], -1).astype(float)
+X[..., 1:3] /= 1000.0; X[..., 3:6] /= 1e6; X[..., 6:] /= 1e9
+for c in range(3):
+    coef, *_ = np.linalg.lstsq(X[fitm], pl[..., c][fitm].astype(float), rcond=None)
+    fit = np.clip(X @ coef, 0, 255)
+    w = np.clip((214 - np.sqrt(r2)) / 4.0, 0, 1)          # soft edge 210-214 px
+    pl[..., c] = (pl[..., c] * (1 - w) + fit * w).astype(np.uint8)
+Image.fromarray(pl, "RGBA").save(OUT / "g8" / "assets" / "g8-types-plate.png")
+rr = np.sqrt((xx - 316.5) ** 2 + (yy - 459) ** 2)
+navy = pl[..., :3].astype(int).max(axis=2) < 90
+circle = (rr <= 276) & ~((rr > 262) & navy)
+bands = [(0, 300), (300, 585), (585, H)]
+def save_layer(name, m):
+    lay = pl.copy(); lay[~m] = 0
+    Image.fromarray(lay, "RGBA").save(OUT / "g8" / "assets" / f"g8-ty-{name}.png", optimize=True)
+save_layer("circle", circle)
+for i, (y0, y1) in enumerate(bands):
+    band = (yy >= y0) & (yy < y1)
+    save_layer(f"conn{i + 1}", band & ~circle & (xx < 690))
+    save_layer(f"bar{i + 1}", band & (xx >= 690))
+print("layers done")
