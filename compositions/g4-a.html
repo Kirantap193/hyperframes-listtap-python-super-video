@@ -28,9 +28,13 @@
       // L: 0 class, 1 def __init__, 2-4 assignments, 5 def place_order, 6 cost = 0,
       //    7 delivery_charge, 8 if, 9 cost = 500, 10 else, 11 cost = 250, 12 return
 
-      // the two dishes and their prices (S23): glossy chips on the right, level with the if/else
-      var pizza = k.chip({ x: 1130, y: 520, w: 300, main: "pizza", sub: "500", color: "orange" });
-      var burger = k.chip({ x: 1500, y: 520, w: 300, main: "burger", sub: "250", color: "amber" });
+      // the two dishes and their prices (S23): the user's price cards on the right, level with the if/else
+      function card(src, x, y, w, h) {
+        return k.hide(k.el("div", "g4-card", "position:absolute;left:" + x + "px;top:" + y + "px;width:" + w + "px;height:" + h +
+          "px;background:url(assets/" + src + ") center / contain no-repeat;"));
+      }
+      var pizza = card("g4-pizza.png", 1010, 420, 431, 300);
+      var burger = card("g4-burger.png", 1466, 420, 394, 300);
       function flipIn(e, at) {
         e.style.transformOrigin = "50% 50%";
         return k.move(e, { autoAlpha: 0, rotationY: -90, z: -220, transformPerspective: 900 },
