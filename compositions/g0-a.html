@@ -15,7 +15,7 @@
       // topic intro: the trainer's super() title art - the panel (with its Parent / Child Class windows)
       // flips in, then the word super() TYPES on letter by letter (crops of the final art at their spots)
       var TT = { size: [2000, 666], y0: 212, y1: 552, segs: [[664, 859], [859, 1071], [1071, 1280], [1280, 1493], [1493, 1639], [1639, 1757], [1757, 1875]] };
-      var S = 0.86, OX = (1920 - TT.size[0] * S) / 2, OY = 596 - TT.size[1] * S / 2, AW = TT.size[0] * S;
+      var S = 0.43, OX = (1920 - TT.size[0] * S) / 2, OY = 380 - TT.size[1] * S / 2, AW = TT.size[0] * S;
       function piece(src, x0, y0, x1, y1) {
         return k.hide(k.el("div", "g0-ty", "left:" + (OX + x0 * S) + "px;top:" + (OY + y0 * S) + "px;width:" + ((x1 - x0) * S) +
           "px;height:" + ((y1 - y0) * S) + "px;background:url(assets/" + src + ") " + (-x0 * S) + "px " + (-y0 * S) + "px / " + AW + "px auto no-repeat;"));
