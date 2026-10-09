@@ -25,19 +25,19 @@
       // P: 0 class Customer, 1 def __init__, 2-4 parent assignments, 5 class PlatinumCustomer,
       //    6 def __init__, 7-9 duplicated assignments, 10 self.platinum_id, 11 def display, 12 print,
       //    13 def main, 14-15 constructor call, 16 display(), 17 if, 18 main()
-      var SC = 6.5;   // the editor starts scrolled down (where the previous run left it)
-      P.slice(5).forEach(function (l) { l.row -= SC; l.rows[0][1] = l.row; l.el.style.top = (l.row * LH) + "px"; });
+      var SC = 4.5;   // the editor starts scrolled down exactly where g1 left it (self.email = email on top)
+      P.slice(4).forEach(function (l) { l.row -= SC; l.rows[0][1] = l.row; l.el.style.top = (l.row * LH) + "px"; });
 
       var t = cw.pop(0.3);
-      t = cw.show(P.slice(5), t, 0.05);
+      t = cw.show(P.slice(4), t, 0.05);
       t += 1.0;
 
       // scroll back to the top: the lower lines slide out, Customer comes back in at the top
       BEAT.scrollTop = t;
-      P.slice(5, 13).forEach(function (l) { cw.moveTo(l, l.row + SC, t, 0.6); });
+      P.slice(4, 13).forEach(function (l) { cw.moveTo(l, l.row + SC, t, 0.6); });
       P.slice(13).forEach(function (l) { k.move(l.el, { top: l.row * LH }, { top: (l.row + SC) * LH }, t, 0.6, "power2.inOut"); });
       cw.fade(P.slice(13), t + 0.1, 0.4);
-      t = cw.show(P.slice(0, 5), t + 0.5, 0.05);
+      t = cw.show(P.slice(0, 4), t + 0.5, 0.05);
       // teaching pause: the child repeats the parent's three assignments
       BEAT.s10hold = t;
       t += 1.9;

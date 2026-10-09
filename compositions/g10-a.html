@@ -1,6 +1,6 @@
 <template id="g10-a-template">
   <style> #root { position: absolute; inset: 0; overflow: hidden; pointer-events: none; } </style>
-  <div data-hf-id="hf-efcy" id="root" data-composition-id="g10-a" data-width="1920" data-height="1080" data-duration="41.93"></div>
+  <div data-hf-id="hf-j6ro" id="root" data-composition-id="g10-a" data-width="1920" data-height="1080" data-duration="43.08"></div>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
   <script src="assets/kit.js"></script>
   <script>
@@ -60,6 +60,7 @@
 
       // ================= S59  comment help, call c_object.test(), add print('C') =================
       BEAT.s59 = t;
+      t = k.out(ow.el, t, 0.45) + 0.15;    // the help() listing goes away - the code is edited alone
       var H2 = cw.edit(L[10], "# help(c_object)", t);
       t = H2.t + 1.0;
       var T1 = cw.add("c_object.test()", 13);
@@ -74,15 +75,17 @@
 
       // ================= S60  output: A then C =================
       BEAT.s60 = t;
-      t = ow.clear(t);
-      t = ow.print("A", "", t + 0.5);
-      t = ow.print("C", "", t + 0.2);
+      var ow2 = k.win({ x: 1000, y: 150, w: 856, h: 200, title: "output", out: true, font: 30, lh: 43 });
+      t = ow2.pop(t);
+      t = ow2.print("A", "", t + 0.2);
+      t = ow2.print("C", "", t + 0.2);
       t += 1.0;
 
-      // ================= S61  closing: code view holds, then everything fades out =================
+      // ================= S61  closing: the output goes, the code holds alone, then fades out =================
       BEAT.s61 = t;
-      t += 0.9;
-      t = k.out([cw.el, ow.el], t, 0.6);
+      t = k.out(ow2.el, t, 0.45);
+      t += 1.0;
+      t = k.out(cw.el, t, 0.6);
       window.__g10aEnd = t;
       window.__timelines["g10-a"] = tl;
     })();

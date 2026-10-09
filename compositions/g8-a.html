@@ -16,7 +16,7 @@
       border: 1.5px solid rgba(255, 255, 255, 0.55); background: rgba(255, 255, 255, 0.12);
       font: 400 15px "JetBrains Mono", Consolas, monospace; color: #e8fff9; white-space: pre; }
   </style>
-  <div data-hf-id="hf-5qu3" id="root" data-composition-id="g8-a" data-width="1920" data-height="1080" data-duration="30.2"></div>
+  <div data-hf-id="hf-kx86" id="root" data-composition-id="g8-a" data-width="1920" data-height="1080" data-duration="28.2"></div>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
   <script src="assets/kit.js"></script>
   <script>
@@ -34,7 +34,7 @@
         "        super().__init__(name,address,phone_no)",
         "        self.platinum_id = platinum_id", "",
         "    def place_order(self,dish):", "        delivery_charge = 50", "        return",
-        "        (super().place_order(dish) - delivery_charge)*0.95", "", "",
+        "    (super().place_order(dish) - delivery_charge)*0.95", "", "",
         "def main():", "    platinum_customer = PlatinumCustomer(", "        'Rohit', 'ITC', 9900887766, 12)",
         "    print(platinum_customer.place_order('pizza'))", "",
         "if __name__ == '__main__':", "    main()"], 0);
@@ -80,29 +80,27 @@
       function memOut(at) { return k.out(MEM.el, at, 0.5); }
       function memIn(at) { return k.fade(MEM.el, at, 0.5); }
 
-      // ================= start on black: the memory state comes in =================
-      BEAT.start = 0.3;
-      cw.show(C, 0.02, 0.001);
-      k.move(cw.el, { autoAlpha: 0, x: -50 }, { autoAlpha: 1, x: 0 }, 0.3, 0.7, "power3.out");
-      flipY(stack, 0.45, -1);
-      flipY(heap, 0.6, 1);
-      k.rise(labS, 0.9, { dy: 20, dur: 0.5 });
-      k.rise(labH, 1.0, { dy: 20, dur: 0.5 });
-      k.move(frame, { autoAlpha: 0, y: -120 }, { autoAlpha: 1, y: 0 }, 0.9, 0.6, "power3.out");
-      k.fade(fname, 1.1, 0.4);
-      [vLab, vBox, vVal].forEach(function (e) { k.fade(e, 1.2, 0.4); });
-      flipY(card, 1.05, 1);
-      var t = ARW.draw(ref, 1.6, 0.6);
-      t += 0.8;
-
-      // ================= S38  run -> RuntimeError: super(): no arguments =================
-      BEAT.s38 = t;
-      t = memOut(t) + 0.15;
-      t = ow.pop(t);
+      // ================= S38  from black: run -> RuntimeError: super(): no arguments =================
+      BEAT.s38 = 0.3;
+      var t = ow.pop(0.3);
       t = ow.print("RuntimeError: super(): no arguments", "o-err", t + 0.1);
       t += 1.8;
       k.out(ow.el, t, 0.45);
-      t = memIn(t + 0.3);
+      t += 0.45 + 0.2;
+
+      // ================= the code + memory state comes in (split return line) =================
+      BEAT.mem = t;
+      cw.show(C, 0.02, 0.001);
+      k.move(cw.el, { autoAlpha: 0, x: -50 }, { autoAlpha: 1, x: 0 }, t, 0.6, "power3.out");
+      flipY(stack, t + 0.1, -1);
+      flipY(heap, t + 0.2, 1);
+      k.rise(labS, t + 0.45, { dy: 20, dur: 0.45 });
+      k.rise(labH, t + 0.5, { dy: 20, dur: 0.45 });
+      k.move(frame, { autoAlpha: 0, y: -120 }, { autoAlpha: 1, y: 0 }, t + 0.45, 0.55, "power3.out");
+      k.fade(fname, t + 0.6, 0.4);
+      [vLab, vBox, vVal].forEach(function (e) { k.fade(e, t + 0.65, 0.4); });
+      flipY(card, t + 0.55, 1);
+      t = ARW.draw(ref, t + 1.0, 0.5);
       t += 1.0;
 
       // ================= S39  join the return expression back onto the return line =================

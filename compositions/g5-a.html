@@ -1,6 +1,6 @@
 <template id="g5-a-template">
   <style> #root { position: absolute; inset: 0; overflow: hidden; pointer-events: none; } </style>
-  <div data-hf-id="hf-ki41" id="root" data-composition-id="g5-a" data-width="1920" data-height="1080" data-duration="53"></div>
+  <div data-hf-id="hf-q99w" id="root" data-composition-id="g5-a" data-width="1920" data-height="1080" data-duration="51.7"></div>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
   <script src="assets/kit.js"></script>
   <script>
@@ -39,9 +39,14 @@
         return at + 0.8;
       }
 
-      var t = cw.pop(0.3);
-      t = cw.show(P, t, 0.05);
-      t += 1.0;
+      // continuity with g4: the editor is ALREADY on screen at t = 0 exactly as g4 left it
+      // (no pop, no staggered show) - static DOM state, nothing on the timeline
+      cw.el.style.opacity = ""; cw.el.style.visibility = "";
+      P.forEach(function (l) {
+        l.showAt = -1e9;                       // counted in the window height from the first frame
+        l.chars.forEach(function (c) { c.style.opacity = ""; c.style.visibility = ""; });
+      });
+      var t = 0.6;
 
       // ================= S25  class PlatinumCustomer(Customer) + overriding __init__ =================
       BEAT.s25 = t;
@@ -97,11 +102,18 @@
       var stay2 = P.slice(10).concat([Lcls, Linit, Lsup, Lpid, Lpo, Ldc, Lret]);
       t = scroll(P.slice(4, 10), stay2, 6.5, t);
       t += 0.4;
-      var M = [cw.add("def main():", 12.5),
-               cw.add("    platinum_customer = PlatinumCustomer(", 13.5),
-               cw.add("        'Rohit', 'ITC', 9900887766, 12)", 14.5)];
-      t = cw.typeCode(M, t);
-      t += 0.5;
+      var Lmain = cw.add("def main():", 12.5);
+      var Lobj = cw.add("    PlatinumCustomer(", 13.5);
+      var Largs = cw.add("        'Rohit', 'ITC', 9900887766, 12)", 14.5);
+      t = cw.typeCode([Lmain], t);
+      BEAT.obj = t;
+      t = cw.type(Lobj, t) + 0.6;              // PlatinumCustomer( first ...
+      BEAT.args = t;
+      t = cw.type(Largs, t) + 1.2;             // ... then the arguments ...
+      // ... and only then the reference in front of the call: platinum_customer =
+      BEAT.ref = t;
+      Lobj = cw.edit(Lobj, "    platinum_customer = PlatinumCustomer(", t);
+      t = Lobj.t + 1.4;
       BEAT.call = t;
       var Lpr = cw.add("    platinum_customer.place_order('pizza')", 15.5);
       t = cw.type(Lpr, t) + 1.2;
@@ -117,6 +129,23 @@
       BEAT.end = t;
       t = k.out([cw.el], t, 0.6);
       window.__g5aEnd = t;
+      // width: the kit fixes the window at its widest line for the whole scene; instead start at
+      // g4's width and grow only when a longer line starts being typed (queued after the kit's sizing)
+      Promise.resolve().then(function () {
+        var CWp = cw.CW, wOf = function (n) { return Math.round(26 + n * CWp + 34); };
+        var ls = cw.lines.filter(function (l) { return isFinite(l.showAt); })
+          .sort(function (a, b) { return a.showAt - b.showAt; });
+        var m = 0, cur = null;
+        ls.forEach(function (l) {
+          if (l.text.length <= m) return;
+          m = l.text.length;
+          if (l.showAt <= 0) { cur = wOf(m); return; }
+          var nw = wOf(m);
+          tl.fromTo(cw.el, { width: cur }, { width: nw, duration: 0.3, ease: "power2.out", immediateRender: false }, l.showAt);
+          cur = nw;
+        });
+        cw.el.style.width = wOf(Math.max.apply(null, P.map(function (l) { return l.text.length; }))) + "px";
+      });
       window.__timelines["g5-a"] = tl;
     })();
   </script>

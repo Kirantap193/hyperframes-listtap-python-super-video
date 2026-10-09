@@ -1,6 +1,6 @@
 <template id="g4-a-template">
   <style> #root { position: absolute; inset: 0; overflow: hidden; pointer-events: none; } </style>
-  <div data-hf-id="hf-x0l4" id="root" data-composition-id="g4-a" data-width="1920" data-height="1080" data-duration="39"></div>
+  <div data-hf-id="hf-shb2" id="root" data-composition-id="g4-a" data-width="1920" data-height="1080" data-duration="38.1"></div>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
   <script src="assets/kit.js"></script>
   <script>
@@ -36,6 +36,11 @@
         return k.move(e, { autoAlpha: 0, rotationY: -90, z: -220, transformPerspective: 900 },
           { autoAlpha: 1, rotationY: 0, z: 0 }, at, 0.75, "power3.out");
       }
+      function flipOut(e, at) {
+        e.style.transformOrigin = "50% 50%";
+        return k.move(e, { autoAlpha: 1, rotationY: 0, z: 0, transformPerspective: 900 },
+          { autoAlpha: 0, rotationY: 90, z: -220 }, at, 0.6, "power2.in");
+      }
 
       // ================= S21  new example: class Customer + __init__ =================
       var t = 0.5;
@@ -61,14 +66,20 @@
 
       // ================= S24  else branch and return cost =================
       BEAT.s24 = t;
-      t = cw.typeCode([L[10]], t) + 0.8;
+      t = cw.typeCode([L[10]], t);
+      // else: typed -> the two dishes leave (3-D flip out), then the else body
+      BEAT.chipsOut = t + 0.1;
+      flipOut(pizza, t + 0.1);
+      flipOut(burger, t + 0.25);
+      t += 1.1;
+      BEAT.cost250 = t;
       t = cw.typeCode([L[11]], t) + 0.8;
+      BEAT.ret = t;
       t = cw.typeCode([L[12]], t);
-      t += 1.6;
+      t += 1.0;
 
-      // end: everything fades out
-      BEAT.out = t;
-      t = k.out([cw.el, pizza, burger], t, 0.6);
+      // end: NO fade - the editor continues in g5; hold the full class Customer on the last frame
+      BEAT.end = t;
       window.__g4aEnd = t;
       window.__timelines["g4-a"] = tl;
     })();
