@@ -32,7 +32,7 @@
       background: linear-gradient(180deg, #127a68 0px, #0c5c50 44px, #0e1a28 44px, #0b1520 100%);
       border: 1.5px solid rgba(90, 230, 200, 0.45); box-shadow: 0 8px 22px rgba(0, 0, 0, 0.55); }
   </style>
-  <div data-hf-id="hf-zctt" id="root" data-composition-id="g7-a" data-width="1920" data-height="1080" data-duration="31.95"></div>
+  <div data-hf-id="hf-tjqp" id="root" data-composition-id="g7-a" data-width="1920" data-height="1080" data-duration="26.4"></div>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
   <script src="assets/kit.js"></script>
   <script>
@@ -134,30 +134,22 @@
       function popFrame(g, t) { return at(g, { y: 0, autoAlpha: 1 }, { y: -70, autoAlpha: 0 }, t, 0.6, "power2.in"); }
 
       // main()'s reference to 1000 (already drawn at t = 0, as g6 left it)
-      var arMain = TOP.arrow({ d: "M1394 865 C 1468 865, 1436 222, 1508 222" });
+      var arMain = TOP.arrow({ d: "M1394 865 C 1472 865, 1472 300, 1508 300" });
 
       // child place_order(): dish, self / delivery_charge / the expression row
       var fChild = frame(612, 186, "place_order()");
       var cDish = slot(fChild, "dish", 52, 76, 100, 20), cSelf = slot(fChild, "self", 52, 256, 110, 20, true);
       var cDel = slot(fChild, "delivery_charge", 180, 204, 70, 74);
       var vcDish = val(cDish, "'pizza'"), vcSelf = val(cSelf, "1000"), vcDel = val(cDel, "50");
-      var eA = slot(fChild, null, 0, 20, 70, 128), eB = slot(fChild, null, 0, 122, 60, 128);
-      var eC = slot(fChild, null, 0, 20, 80, 128), eD = slot(fChild, null, 0, 20, 100, 128);
-      var veA = val(eA, "550"), veB = val(eB, "50"), veC = val(eC, "500"), veD = val(eD, "475.0");
-      var opMinus = opText(fChild, 94, 24, 128, "-"), opTimes = opText(fChild, 108, 80, 128, "* 0.95");
-      var arChild = TOP.arrow({ d: "M1398 651 C 1460 651, 1444 222, 1508 222" });
+      var arChild = TOP.arrow({ d: "M1398 651 C 1461 651, 1461 268, 1508 268" });
 
       // parent place_order(): dish, self / cost / delivery_charge
       var fPar = frame(414, 186, "place_order()");
       var pDish = slot(fPar, "dish", 52, 76, 100, 20), pSelf = slot(fPar, "self", 52, 256, 110, 20, true);
       var pCost = slot(fPar, "cost", 52, 76, 80, 74), pDel = slot(fPar, "delivery_charge", 180, 204, 70, 128);
       var vpDish = val(pDish, "'pizza'"), vpSelf = val(pSelf, "1000"), vpCost0 = val(pCost, "0"), vpCost = val(pCost, "550"), vpDel = val(pDel, "50");
-      var arPar = TOP.arrow({ d: "M1398 453 C 1456 453, 1448 222, 1508 222" });
+      var arPar = TOP.arrow({ d: "M1398 453 C 1450 453, 1450 236, 1508 236" });
 
-      // the value the child returns travels down into main() (print takes it)
-      var ret = k.hide(k.el("div", "g7-bx", "left:1050px;top:740px;width:100px;"));
-      ret.setAttribute("data-layout-allow-overlap", "true");
-      k.el("div", "g7-vl", null, "475.0", ret);
       root.appendChild(TOP.el);
 
       // ================= start: g6's last frame, already on screen at t = 0 (no entrance) =================
@@ -199,40 +191,17 @@
       BEAT.c550 = t;
       at(vpCost0, { y: 0, autoAlpha: 1 }, { y: -16, autoAlpha: 0 }, t, 0.3, "power2.in");
       t = typeVal(vpCost, t + 0.35) + 1.2;
-      // return cost: 550 goes back to the child's waiting expression
+      // return cost: 550 goes back to the child (storyboard S36: the parent frame is then removed)
       BEAT.ret550 = t;
-      at(eA.box, { autoAlpha: 0, scale: 0.55 }, { autoAlpha: 1, scale: 1 }, t, 0.4);
-      t = fly(veA, eA, { x: pCost.cx, y: pCost.cy }, t + 0.1, 0.85) + 0.5;
       TOP.undraw(arPar, t, 0.4);
       t = popFrame(fPar, t + 0.1) + 1.0;
 
-      // ================= S37  the child: (550 - 50)*0.95 = 475.0, returns, frame pops =================
+      // ================= S37  back in the child: (550 - 50)*0.95 is returned, its frame is removed =================
       BEAT.s37 = t;
-      k.fade(opMinus, t, 0.3);
-      at(eB.box, { autoAlpha: 0, scale: 0.55 }, { autoAlpha: 1, scale: 1 }, t + 0.2, 0.4);
-      t = fly(veB, eB, { x: cDel.cx, y: cDel.cy }, t + 0.3) + 0.8;
-      BEAT.m500 = t;
-      [eA.box, opMinus, eB.box].forEach(function (e, i) {
-        at(e, { x: 0, autoAlpha: 1 }, { x: [10, -40, -90][i], autoAlpha: 0 }, t, 0.4, "power2.in");
-      });
-      at(eC.box, { autoAlpha: 0, scale: 0.6 }, { autoAlpha: 1, scale: 1 }, t + 0.3, 0.45);
-      k.fade(veC, t + 0.3, 0.3);
-      t += 1.5;
-      BEAT.times = t;
-      t = k.fade(opTimes, t, 0.4) + 0.9;
-      BEAT.r475 = t;
-      [eC.box, opTimes].forEach(function (e, i) { at(e, { x: 0, autoAlpha: 1 }, { x: [10, -60][i], autoAlpha: 0 }, t, 0.4, "power2.in"); });
-      at(eD.box, { autoAlpha: 0, scale: 0.6 }, { autoAlpha: 1, scale: 1 }, t + 0.3, 0.45);
-      k.fade(veD, t + 0.3, 0.3);
-      t += 1.8;
-      // return: 475.0 goes down to main() (print takes it), the child's frame pops
+      t += 2.4;                                    // the trainer explains 550 - 50 = 500, 95% of 500 = 475.0
       BEAT.pop = t;
       TOP.undraw(arChild, t, 0.4);
-      popFrame(fChild, t);
-      tl.fromTo(ret, { autoAlpha: 0 }, Object.assign({ autoAlpha: 1, duration: 0.05, ease: "none" }, IR), t);
-      at(ret, { x: 0, y: 0 }, { x: 200, y: 70 }, t, 0.8, "power2.inOut");
-      t = at(ret, { autoAlpha: 1 }, { autoAlpha: 0 }, t + 0.45, 0.45, "power1.inOut");
-      t += 1.2;
+      t = popFrame(fChild, t) + 1.4;               // back in main(): only platinum_customer -> 1000 is left
 
       // ================= end: everything fades out =================
       BEAT.end = t;

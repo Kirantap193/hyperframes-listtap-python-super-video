@@ -154,9 +154,11 @@
         fly(r.v, src, lt + 0.3, 0.7);
         return lt + 1.0;
       }
-      // every reference lands on the card header at (1508, 222) - g8's main() arrow shape
+      // references from the stack to the heap card
       function refArrow(y) {
-        return AR.arrow({ d: y > 300 ? "M1394 " + y + " C 1468 " + y + ", 1436 222, 1508 222" : "M1394 " + y + " C 1450 " + y + ", 1450 222, 1508 222" });
+        // each reference lands on its own spot of the card edge (top frame highest) - no two arrows cross
+        var ty = y > 800 ? 300 : (y > 300 ? 268 : 236), cx = y > 800 ? 1472 : (y > 300 ? 1461 : 1450);
+        return AR.arrow({ d: "M1394 " + y + " C " + cx + " " + y + ", " + cx + " " + ty + ", 1508 " + ty });
       }
       function selfRef(r, at) {             // self: 1000 flies heap -> stack, then the arrow draws
         var t = fill(r, ADDR, at);
